@@ -31,9 +31,13 @@ jobs:
       CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       # optional knobs
-      MAX_ITEMS: "20"
-      MAX_VIDEOS: "5"
-      YT_PRIVACY: "public"       # set to "private" until your YouTube API audit is approved (see README)
+      MAX_ITEMS: "10"
+      MAX_VIDEOS: "2"
+      YT_PRIVACY: "private"
+      PYTHONUNBUFFERED: "1"
+      GEMINI_MODEL: "gemini-flash-latest"
+      UPLOAD_YT: "0"
+      UPLOAD_IG: "0"      # set to "private" until your YouTube API audit is approved (see README)
     steps:
       - uses: actions/checkout@v4
 
