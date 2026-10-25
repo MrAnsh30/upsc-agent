@@ -1,0 +1,80 @@
+name: UPSC daily agent
+
+on:
+  schedule:
+    - cron: "30 0 * * *"      # 00:30 UTC = 06:00 IST (GitHub may delay scheduled runs by 10-60+ min)
+  workflow_dispatch: {}        # manual "Run workflow" button for testing
+
+permissions:
+  contents: write              # only used for the keep-alive commit below
+
+concurrency:
+  group: upsc-daily
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+      SHEET_ID: ${{ secrets.SHEET_ID }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+      UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+      IG_USER_ID: ${{ secrets.IG_USER_ID }}
+      IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      # optional knobs
+      MAX_ITEMS: "20"
+      MAX_VIDEOS: "5"
+      YT_PRIVACY: "public"       # set to "private" until your YouTube API audit is approved (see README)
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: System packages (ffmpeg + fonts)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ffmpeg fonts-dejavu-core fonts-noto-core
+
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+
+      - name: 1) Fetch, cluster, update Master Sheet, purge expired
+        run: python fetch_and_cluster.py
+
+      - name: 2) Generate short videos
+        run: python video_generator.py
+
+      - name: 3) Upload to YouTube Shorts + Instagram Reels
+        run: python uploader.py
+
+      - name: Keep artifacts (videos, logs) for 3 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-output
+          path: |
+            output/videos/*.mp4
+            output/*.json
+          retention-days: 3
+
+      - name: Keep-alive commit (GitHub pauses cron on repos with 60 days of no activity)
+        if: always()
+        run: |
+          mkdir -p state && date -u +"%Y-%m-%dT%H:%M:%SZ" > state/last_run.txt
+          git config user.name  "upsc-agent[bot]"
+          git config user.email "upsc-agent@users.noreply.github.com"
+          git add state/last_run.txt
+          git commit -m "chore: keep-alive" || echo "nothing to commit"
+          git push || true

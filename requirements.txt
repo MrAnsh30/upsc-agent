@@ -1,0 +1,12 @@
+feedparser==6.0.11
+requests>=2.32
+trafilatura>=1.12
+gspread>=6.0
+google-auth>=2.30
+google-api-python-client>=2.130
+google-auth-oauthlib>=1.2
+edge-tts>=6.1.12
+gTTS>=2.5
+moviepy>=2.0,<3
+Pillow>=10
+numpy>=1.26
