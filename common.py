@@ -100,7 +100,7 @@ def delete_rows(sh, ws, row_numbers: list[int]) -> None:
 
 # ----------------------------------------------------------------------------- LLM (Gemini free tier)
 def llm_json(prompt: str, retries: int = 4):
-    """Call Gemini (free tier) over REST and return parsed JSON. Paces calls to respect free-tier RPM."""
+    """Call Gemini (free tier) over REST and return parsed JSON. Logs every failure."""
     key = env("GEMINI_API_KEY", required=True)
     model = env("GEMINI_MODEL", "gemini-2.5-flash")
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
@@ -111,17 +111,22 @@ def llm_json(prompt: str, retries: int = 4):
     last: Exception | None = None
     for attempt in range(retries):
         try:
-            r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=180)
-            if r.status_code in (429, 500, 503):
+            print(f"[llm] calling {model} (attempt {attempt + 1})", flush=True)
+            r = requests.post(url, headers={"x-goog-api-key": key}, json=body, timeout=90)
+            if r.status_code != 200:
+                print(f"[llm] HTTP {r.status_code}: {r.text[:300]}", flush=True)
+                last = RuntimeError(f"HTTP {r.status_code}")
+                if r.status_code in (400, 401, 403, 404):
+                    break  # a wrong key/model name will not fix itself
                 time.sleep(20 * (attempt + 1))
                 continue
-            r.raise_for_status()
             text = r.json()["candidates"][0]["content"]["parts"][0]["text"]
             text = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
             data = json.loads(text)
             time.sleep(float(env("LLM_PACE_SECONDS", "7")))
             return data
         except Exception as e:  # noqa: BLE001
+            print(f"[llm] error: {e}", flush=True)
             last = e
             time.sleep(5)
     raise RuntimeError(f"LLM call failed after {retries} attempts: {last}")
