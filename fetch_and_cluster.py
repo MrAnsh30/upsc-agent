@@ -81,7 +81,7 @@ def interleave(arts: list[dict]) -> list[dict]:
     for a in arts:
         by_src.setdefault(a["source"], []).append(a)
     out, i = [], 0
-        while i < max(len(v) for v in by_src.values()):
+    while i < max(len(v) for v in by_src.values()):
         for lst in by_src.values():
             if i < len(lst):
                 out.append(lst[i])
