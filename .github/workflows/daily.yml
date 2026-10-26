@@ -35,7 +35,7 @@ jobs:
       MAX_VIDEOS: "2"
       YT_PRIVACY: "private"
       PYTHONUNBUFFERED: "1"
-      GEMINI_MODEL: "gemini-flash-latest"
+      GEMINI_MODEL: "gemini-2.5-flash-lite"
       UPLOAD_YT: "0"
       UPLOAD_IG: "0"      # set to "private" until your YouTube API audit is approved (see README)
     steps:
