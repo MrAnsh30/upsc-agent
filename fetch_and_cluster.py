@@ -113,7 +113,8 @@ Return JSON: {{"selected":[{{"i":<index>,"score":<1-10>}}]}} with at most {MAX_I
 ITEMS (index|source|title|snippet):
 {lines}"""
     res = llm_json(prompt)
-    sel = sorted(res.get("selected", []), key=lambda x: -int(x.get("score", 0)))[:MAX_ITEMS]
+    sel_raw = res if isinstance(res, list) else res.get("selected", [])
+    sel = sorted(sel_raw, key=lambda x: -int(x.get("score", 0)))[:MAX_ITEMS]
     return [pool[s["i"]] for s in sel if isinstance(s.get("i"), int) and 0 <= s["i"] < len(pool)]
 
 
@@ -152,7 +153,8 @@ Return JSON: {{"items":[{{"i":0,"keep":true,"thread_id":null,"new_thread_title":
 "prelims_facts":[],"gs_paper":"","syllabus_mapping":"","is_concluded":false,"image_query":""}}]}}"""
     res = llm_json(prompt)
     out = []
-    for it in res.get("items", []):
+    items_raw = res if isinstance(res, list) else res.get("items", [])
+    for it in items_raw:
         i = it.get("i")
         if isinstance(i, int) and 0 <= i < len(batch) and it.get("keep") and it.get("headline") and it.get("summary"):
             it["_art"] = batch[i]
