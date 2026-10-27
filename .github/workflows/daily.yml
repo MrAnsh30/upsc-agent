@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}        # manual "Run workflow" button for testing
 
 permissions:
-  contents: write              # only used for the keep-alive commit below
+  contents: write              # used to save state/published.json + the keep-alive commit
 
 concurrency:
   group: upsc-daily
@@ -33,11 +33,17 @@ jobs:
       # optional knobs
       MAX_ITEMS: "10"
       MAX_VIDEOS: "2"
-      YT_PRIVACY: "private"
+      ITEMS_PER_VIDEO: "4"
+      YT_PRIVACY: "private"      # set to "public" after your YouTube API audit is approved
       PYTHONUNBUFFERED: "1"
       GEMINI_MODEL: "gemini-3.5-flash-lite"
-      UPLOAD_YT: "0"
-      UPLOAD_IG: "0"      # set to "private" until your YouTube API audit is approved (see README)
+      UPLOAD_YT: "0"             # set to "1" once YouTube is set up
+      UPLOAD_IG: "0"             # set to "1" once Instagram is set up
+      NARRATION_LANG: "hi"       # Hindi voice-over (on-screen text stays English); "en" = English voice
+      TTS_VOICE: "hi-IN-SwaraNeural"
+      TTS_RATE: "-4%"
+      VIDEO_RETENTION_DAYS: "10" # videos are deleted from YouTube, Instagram and local storage after this many days
+      CLEANUP_DRY_RUN: "0"       # set to "1" to only PRINT what would be deleted
     steps:
       - uses: actions/checkout@v4
 
@@ -57,11 +63,15 @@ jobs:
       - name: 1) Fetch, cluster, update Master Sheet, purge expired
         run: python fetch_and_cluster.py
 
-      - name: 2) Generate short videos
+      - name: 2) Generate short videos (Hindi voice-over)
         run: python video_generator.py
 
       - name: 3) Upload to YouTube Shorts + Instagram Reels
         run: python uploader.py
+
+      - name: 4) Delete videos older than 10 days (never touches the Sheet)
+        if: always()
+        run: python cleanup.py
 
       - name: Keep artifacts (videos, logs) for 3 days
         if: always()
@@ -73,12 +83,13 @@ jobs:
             output/*.json
           retention-days: 3
 
-      - name: Keep-alive commit (GitHub pauses cron on repos with 60 days of no activity)
+      - name: Save state + keep-alive commit
         if: always()
         run: |
           mkdir -p state && date -u +"%Y-%m-%dT%H:%M:%SZ" > state/last_run.txt
           git config user.name  "upsc-agent[bot]"
           git config user.email "upsc-agent@users.noreply.github.com"
-          git add state/last_run.txt
-          git commit -m "chore: keep-alive" || echo "nothing to commit"
+          git add state/
+          git commit -m "chore: save state" || echo "nothing to commit"
+          git pull --rebase || true
           git push || true
