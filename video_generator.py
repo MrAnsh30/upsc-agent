@@ -367,7 +367,7 @@ def build_video(idx: int, group: list[dict]) -> dict:
     for a in audios:
         a.close()
     return {"file": str(path), "title": script["title"][:90], "hashtags": script.get("hashtags", ["#UPSC"])[:8],
-            "duration": round(total, 1), "voice": voice, "credits": sorted(set(credits)),
+            "duration": round(total, 1), "voice": voice, "narration": [sc["narration"] for sc in scenes], "credits": sorted(set(credits)),
             "items": [{"news_id": g["news_id"], "thread_id": g["thread_id"], "headline": g["headline"],
                        "gs_paper": g["gs_paper"]} for g in group]}
 
