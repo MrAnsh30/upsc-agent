@@ -7,6 +7,7 @@ MoviePy assembly (pan effect + dip-to-black transitions). Writes output/manifest
 from __future__ import annotations
 
 import asyncio
+import datetime as dt
 import io
 import json
 import math
@@ -54,8 +55,8 @@ def group_items(items: list[dict]) -> list[list[dict]]:
 
 
 def write_script(group: list[dict]) -> dict:
-    listing = "\n".join(f"[{i}] {g['headline']} | {g['summary']} | GS: {g['gs_paper']} | "
-                        f"Thread: {g['thread_title']}" for i, g in enumerate(group))
+    listing = "\n".join(f"[{i}] {g['headline']} | {g['summary']} | Key points: {'; '.join(g.get('key_points', []))} | "
+                        f"GS: {g['gs_paper']} | Thread: {g['thread_title']}" for i, g in enumerate(group))
     if NARRATION_LANG == "hi":
         lang_rule = ("NARRATION LANGUAGE: VERY SIMPLE, everyday spoken Hindi written in Devanagari - the Hindi people use in "
                      "daily talk, which a Class 8 student or a person from any state can understand at once. "
@@ -75,8 +76,12 @@ def write_script(group: list[dict]) -> dict:
     prompt = f"""Write a YouTube Shorts / Instagram Reels script (<= 55 seconds spoken) for UPSC aspirants revising today's
 current affairs. Structure: a curiosity-driven hook, one scene per item below (the fact PLUS why it matters for the exam),
 and an outro {outro_hint}. Word budget: {budget}. No emojis or hashtags inside narration. Do not copy source sentences.
+FACT RULES (very important, this is exam revision): use ONLY facts that are written in the item text above. Do not add outside
+facts, names, years or results. Keep every qualifier: if the item says "proposed", "permitted", "only for special vehicles" or
+"according to a report", say that - never turn a proposal into a done decision or a limited rule into a general one. Do not say
+"now", "today", "new" or "recently" unless the item itself says so.
 {lang_rule}
-Return JSON: {{"title":"<=70 chars, ENGLISH","hook":{{"text":"<narration>","screen":"<=8 words ENGLISH"}},
+Return JSON: {{"title":"<=70 chars, ENGLISH, specific: name the 2 biggest topics of THIS video (never a generic title like 'Daily Current Affairs Revision')","hook":{{"text":"<narration>","screen":"<=8 words ENGLISH"}},
 "scenes":[{{"i":0,"narration":"<narration>","screen_title":"<=12 words ENGLISH","bullets":["<=9 words ENGLISH"]}}],
 "outro":"<narration>","hashtags":["#UPSC"]}}  (max 3 bullets per scene, max 8 hashtags)
 
@@ -131,6 +136,22 @@ def _strip(s: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s or "")).strip()
 
 
+_STOP = {"the", "and", "for", "with", "from", "photo", "image", "picture", "building", "view", "new", "old"}
+
+
+def _relevant(query: str, text: str) -> bool:
+    """A Commons photo is used only if its title/description share enough keywords with the query,
+    and it is not an old (pre-2005) archive photo. Otherwise we prefer a plain background to a wrong photo."""
+    text = text.lower()
+    words = [w for w in re.findall(r"[a-z]{3,}", query.lower()) if w not in _STOP]
+    if not words:
+        return False
+    need = max(1, min(2, len(words) // 2))
+    if sum(1 for w in words if w in text) < need:
+        return False
+    return not re.search(r"\b(1[89]\d{2}|200[0-4])\b", text)
+
+
 def img_wikimedia(q: str):
     r = requests.get("https://commons.wikimedia.org/w/api.php", headers=UA, timeout=25, params={
         "action": "query", "generator": "search", "gsrsearch": f"{q} filetype:bitmap", "gsrnamespace": 6,
@@ -143,6 +164,12 @@ def img_wikimedia(q: str):
         if ii.get("mime") != "image/jpeg" or ii.get("width", 0) < 900:
             continue
         if not re.match(r"(CC0|CC BY|Public domain|PD)", lic, re.I) or re.search(r"\b(NC|ND)\b", lic):
+            continue
+        about = " ".join([p.get("title", ""), _strip(meta.get("ObjectName", {}).get("value", "")),
+                          _strip(meta.get("ImageDescription", {}).get("value", "")),
+                          _strip(meta.get("Categories", {}).get("value", "")),
+                          _strip(meta.get("DateTimeOriginal", {}).get("value", ""))])
+        if not _relevant(q, about):
             continue
         artist = _strip(meta.get("Artist", {}).get("value", "")) or "Unknown"
         return ii["thumburl"], f"{artist[:60]} ({lic}), Wikimedia Commons"
@@ -310,6 +337,23 @@ def with_audio(clip, audio):
 
 
 # ----------------------------------------------------------------------------- build one video
+_USED_TITLES: set[str] = set()
+
+
+def unique_title(script: dict, group: list[dict]) -> str:
+    """Specific, never repeated, never the generic placeholder."""
+    title = (script.get("title") or "").strip()
+    generic = ("revision in hindi" in title.lower() or "daily current affairs revision" in title.lower() or len(title) < 12)
+    if generic or title.lower() in _USED_TITLES:
+        head = group[0]["headline"]
+        head = head if len(head) <= 45 else head[:45].rsplit(" ", 1)[0]   # cut at a word, not mid-word
+        title = f"UPSC Current Affairs {dt.date.today():%d %b}: {head}"
+        if len(group) > 1:
+            title += f" + {len(group) - 1} more"
+    _USED_TITLES.add(title.lower())
+    return title[:90]
+
+
 def build_video(idx: int, group: list[dict]) -> dict:
     script = write_script(group)
     voice = script.get("_voice", VOICE)
@@ -366,7 +410,7 @@ def build_video(idx: int, group: list[dict]) -> dict:
     final.close()
     for a in audios:
         a.close()
-    return {"file": str(path), "title": script["title"][:90], "hashtags": script.get("hashtags", ["#UPSC"])[:8],
+    return {"file": str(path), "title": unique_title(script, group), "hashtags": script.get("hashtags", ["#UPSC"])[:8],
             "duration": round(total, 1), "voice": voice, "narration": [sc["narration"] for sc in scenes], "credits": sorted(set(credits)),
             "items": [{"news_id": g["news_id"], "thread_id": g["thread_id"], "headline": g["headline"],
                        "gs_paper": g["gs_paper"]} for g in group]}

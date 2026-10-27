@@ -33,6 +33,7 @@ FEEDS = [
 ]
 UA = {"User-Agent": "Mozilla/5.0 (compatible; UPSC-CA-Agent/1.0)"}
 LOOKBACK_HOURS = int(env("LOOKBACK_HOURS", "30"))
+STALE_ARTICLE_DAYS = int(env("STALE_ARTICLE_DAYS", "21"))  # drop stories whose page says they are older than this
 MAX_ITEMS = int(env("MAX_ITEMS", "20"))
 BATCH = 6
 RUNNING_LOG_CAP = 40_000  # Google Sheets cell limit is 50,000 chars
@@ -70,6 +71,7 @@ def fetch_articles() -> list[dict]:
                 continue
             seen.add(key)
             arts.append({"id": sha(link), "source": source, "title": title, "link": link,
+                         "published": dt.datetime(*ts[:6]).strftime("%Y-%m-%d") if ts else "",
                          "snippet": clean(e.get("summary", ""))[:500]})
     print(f"[info] fetched {len(arts)} fresh articles")
     return arts
@@ -81,7 +83,7 @@ def interleave(arts: list[dict]) -> list[dict]:
     for a in arts:
         by_src.setdefault(a["source"], []).append(a)
     out, i = [], 0
-    while i < max(len(v) for v in by_src.values()):
+    while i < max((len(v) for v in by_src.values()), default=0):
         for lst in by_src.values():
             if i < len(lst):
                 out.append(lst[i])
@@ -89,28 +91,31 @@ def interleave(arts: list[dict]) -> list[dict]:
     return out
 
 
-def article_text(url: str) -> str:
-    """Context for the LLM only. We never republish this text."""
+def article_info(url: str) -> tuple[str, str]:
+    """Returns (text, page_date). Text is context for the LLM only - we never republish it."""
     try:
         import trafilatura
         r = requests.get(url, headers=UA, timeout=20)
-        return (trafilatura.extract(r.text, include_comments=False) or "")[:1500]
+        text = (trafilatura.extract(r.text, include_comments=False) or "")[:1500]
+        meta = trafilatura.extract_metadata(r.text)
+        return text, (getattr(meta, "date", "") or "")
     except Exception:  # noqa: BLE001
-        return ""
+        return "", ""
 
 
 # ----------------------------------------------------------------------------- LLM stages
 def triage(arts: list[dict]) -> list[dict]:
     pool = interleave(arts)[:150]
-    lines = "\n".join(f"{i}|{a['source']}|{a['title']}|{a['snippet'][:140]}" for i, a in enumerate(pool))
+    lines = "\n".join(f"{i}|{a['source']}|{a['published']}|{a['title']}|{a['snippet'][:140]}" for i, a in enumerate(pool))
     prompt = f"""You are a UPSC CSE current-affairs editor. From the list below pick the items most useful
 for UPSC Prelims + Mains (GS1-4, Essay). Skip sports results, crime, celebrity news, routine stock moves,
 local-politics trivia, advertorials. Prefer policy, governance, schemes, international relations, economy
 data/reforms, environment, science & tech, security, court judgments, reports/indices, analytical editorials.
-Pick only one item per event.
+Pick only one item per event. Today is {today_ist().isoformat()}: skip stories that look like old news, archive
+pieces or re-listed articles about events from an earlier year.
 Return JSON: {{"selected":[{{"i":<index>,"score":<1-10>}}]}} with at most {MAX_ITEMS} items, score >= 6 only.
 
-ITEMS (index|source|title|snippet):
+ITEMS (index|source|published|title|snippet):
 {lines}"""
     res = llm_json(prompt)
     sel_raw = res if isinstance(res, list) else res.get("selected", [])
@@ -125,7 +130,7 @@ def enrich_batch(batch: list[dict], threads: dict[str, dict]) -> list[dict]:
         key=lambda t: t["Last_Update"], reverse=True)[:250]
     thread_list = "\n".join(f"{t['Thread_ID']} | {t['Thread_Title']} | {t['Type']}" for t in active) or "(none yet)"
     arts = "\n\n".join(
-        f"[{i}] SOURCE: {a['source']}\nTITLE: {a['title']}\nSNIPPET: {a['snippet']}\nTEXT: {a.get('text', '')}"
+        f"[{i}] SOURCE: {a['source']} | PUBLISHED: {a['published']} | PAGE DATE: {a.get('page_date') or 'unknown'}\nTITLE: {a['title']}\nSNIPPET: {a['snippet']}\nTEXT: {a.get('text', '')}"
         for i, a in enumerate(batch))
     prompt = f"""You build UPSC revision notes. For each article decide if it is exam-relevant and produce notes
 in YOUR OWN WORDS (never copy sentences from the source).
@@ -140,7 +145,13 @@ RULES
   event completed). A ceasefire, pause or talks is NOT conclusion.
 - category must be one of: {json.dumps(CATEGORIES)}
 - gs_paper one of GS1, GS2, GS3, GS4, Prelims. syllabus_mapping like "GS2 - International Relations: India and neighbourhood".
-- image_query: 3-5 generic words for a stock/Wikimedia photo (e.g. "Parliament of India building").
+- image_query: 3-5 generic words for a stock/Wikimedia photo (e.g. "Parliament of India building"). Name the
+  COUNTRY or place (e.g. "India", "Telangana") and avoid people's names unless the story is about that person.
+- ACCURACY: use only facts that appear in the article text/snippet. Keep every qualifier (proposed vs approved,
+  permitted vs mandatory, "only for X", "according to a report"). Never turn a limited or optional rule into a general one.
+  Do not add outside facts, names, numbers or results.
+- FRESHNESS: today is {today_ist().isoformat()}. Set is_current=false if the article mainly describes events from an
+  earlier year (an old election, an old decision) rather than a fresh development; otherwise true.
 
 EXISTING ACTIVE THREADS (id | title | type):
 {thread_list}
@@ -150,13 +161,13 @@ ARTICLES:
 
 Return JSON: {{"items":[{{"i":0,"keep":true,"thread_id":null,"new_thread_title":"","thread_type":"STANDARD",
 "category":"","sub_topic":"","headline":"<=90 chars","summary":"60-80 words, UPSC angle","key_points":["","",""],
-"prelims_facts":[],"gs_paper":"","syllabus_mapping":"","is_concluded":false,"image_query":""}}]}}"""
+"prelims_facts":[],"gs_paper":"","syllabus_mapping":"","is_concluded":false,"is_current":true,"image_query":""}}]}}"""
     res = llm_json(prompt)
     out = []
     items_raw = res if isinstance(res, list) else res.get("items", [])
     for it in items_raw:
         i = it.get("i")
-        if isinstance(i, int) and 0 <= i < len(batch) and it.get("keep") and it.get("headline") and it.get("summary"):
+        if isinstance(i, int) and 0 <= i < len(batch) and it.get("keep") and it.get("is_current", True) is not False and it.get("headline") and it.get("summary"):
             it["_art"] = batch[i]
             out.append(it)
     return out
@@ -280,8 +291,15 @@ def main() -> int:
 
     chosen = triage(arts)
     print(f"[info] triage selected {len(chosen)} items")
+    fresh: list[dict] = []
     for a in chosen:
-        a["text"] = article_text(a["link"])
+        a["text"], a["page_date"] = article_info(a["link"])
+        d = retention.parse(a["page_date"])
+        if d and (today - d).days > STALE_ARTICLE_DAYS:
+            print(f"[skip] page says {a['page_date']} (too old): {a['title'][:70]}")
+            continue
+        fresh.append(a)
+    chosen = fresh
 
     news_rows: list[list] = []
     bundle: list[dict] = []
