@@ -28,8 +28,10 @@ except ImportError:  # MoviePy 1.x
 
 W, H, FPS = 1080, 1920, 24
 PAN = 1.15                       # background is rendered 15% larger so it can slowly pan
-VOICE = env("TTS_VOICE", "en-IN-NeerjaNeural")   # try en-IN-PrabhatNeural / hi-IN-SwaraNeural
-RATE = env("TTS_RATE", "+6%")
+NARRATION_LANG = env("NARRATION_LANG", "hi")     # "hi" = Hindi voice-over, "en" = English voice-over
+VOICE = env("TTS_VOICE", "hi-IN-SwaraNeural")     # Hindi: hi-IN-SwaraNeural (female) / hi-IN-MadhurNeural (male)
+FALLBACK_VOICE = "en-IN-NeerjaNeural"             # used only if the Hindi script could not be generated
+RATE = env("TTS_RATE", "-4%")
 ITEMS_PER_VIDEO = int(env("ITEMS_PER_VIDEO", "5"))
 MAX_VIDEOS = int(env("MAX_VIDEOS", "5"))          # YouTube free quota allows ~6 uploads/day
 MAX_SECONDS = 58
@@ -54,24 +56,39 @@ def group_items(items: list[dict]) -> list[list[dict]]:
 def write_script(group: list[dict]) -> dict:
     listing = "\n".join(f"[{i}] {g['headline']} | {g['summary']} | GS: {g['gs_paper']} | "
                         f"Thread: {g['thread_title']}" for i, g in enumerate(group))
-    prompt = f"""Write a YouTube Shorts / Instagram Reels script (<= 55 seconds spoken, about 120 words in total)
-for UPSC aspirants revising today's current affairs.
-Structure: a hook (<= 14 words, curiosity-driven), one scene per item below (<= 22 words narration: the fact PLUS
-why it matters for the exam), and an outro (<= 14 words) telling viewers the full thread-wise notes are in the
-description. Plain spoken English, no emojis or hashtags inside narration. Do not copy source sentences.
-Return JSON: {{"title":"<=70 chars","hook":{{"text":"","screen":"<=8 words"}},
-"scenes":[{{"i":0,"narration":"","screen_title":"<=12 words","bullets":["<=9 words"]}}],
-"outro":"","hashtags":["#UPSC"]}}  (max 3 bullets per scene, max 8 hashtags)
+    if NARRATION_LANG == "hi":
+        lang_rule = ("NARRATION LANGUAGE: natural, spoken HINDI written in Devanagari script (simple conversational Hindi "
+                     "that a UPSC student would use, not heavy Sanskritised words). Write English acronyms and proper nouns "
+                     "the way they are SPOKEN in Hindi, in Devanagari (e.g. यूपीआई, इसरो, ब्रिक्स, जीएसटी, संयुक्त राष्ट्र), "
+                     "so the voice pronounces them correctly. ON-SCREEN TEXT (title, hook.screen, screen_title, bullets) "
+                     "MUST stay in ENGLISH, exactly as an English video would show it.")
+        budget = "hook <= 12 words, each scene narration <= 20 words, outro <= 12 words (counted in Hindi words)"
+        outro_hint = 'e.g. "पूरे नोट्स डिस्क्रिप्शन में हैं। रोज़ की रिवीज़न के लिए फ़ॉलो करें।"'
+    else:
+        lang_rule = "NARRATION LANGUAGE: plain spoken English. On-screen text is English too."
+        budget = "hook <= 14 words, each scene narration <= 22 words, outro <= 14 words"
+        outro_hint = "telling viewers the full thread-wise notes are in the description"
+    prompt = f"""Write a YouTube Shorts / Instagram Reels script (<= 55 seconds spoken) for UPSC aspirants revising today's
+current affairs. Structure: a curiosity-driven hook, one scene per item below (the fact PLUS why it matters for the exam),
+and an outro {outro_hint}. Word budget: {budget}. No emojis or hashtags inside narration. Do not copy source sentences.
+{lang_rule}
+Return JSON: {{"title":"<=70 chars, ENGLISH","hook":{{"text":"<narration>","screen":"<=8 words ENGLISH"}},
+"scenes":[{{"i":0,"narration":"<narration>","screen_title":"<=12 words ENGLISH","bullets":["<=9 words ENGLISH"]}}],
+"outro":"<narration>","hashtags":["#UPSC"]}}  (max 3 bullets per scene, max 8 hashtags)
 
 ITEMS:
 {listing}"""
     try:
         s = llm_json(prompt)
         assert s.get("scenes") and s.get("hook")
+        if NARRATION_LANG == "hi":
+            spoken = " ".join([s["hook"]["text"], s.get("outro", "")] + [x["narration"] for x in s["scenes"]])
+            assert re.search(r"[\u0900-\u097F]", spoken), "narration is not Hindi"
         return s
-    except Exception as e:  # noqa: BLE001 — deterministic fallback so the pipeline never stalls
-        print(f"[warn] script LLM failed ({e}); using fallback script")
-        return {"title": f"UPSC Current Affairs: {group[0]['headline'][:50]}",
+    except Exception as e:  # noqa: BLE001 - deterministic fallback so the pipeline never stalls
+        print(f"[warn] script LLM failed ({e}); using English fallback script + English voice")
+        return {"_voice": FALLBACK_VOICE,
+                "title": f"UPSC Current Affairs: {group[0]['headline'][:50]}",
                 "hook": {"text": f"{len(group)} UPSC updates you must revise today.", "screen": "UPSC Daily Revision"},
                 "scenes": [{"i": i, "narration": g["headline"] + ". " + (g["key_points"][0] if g["key_points"] else ""),
                             "screen_title": g["headline"], "bullets": g["key_points"][:3]} for i, g in enumerate(group)],
@@ -80,22 +97,22 @@ ITEMS:
 
 
 # ----------------------------------------------------------------------------- TTS
-async def _edge(text: str, path: str, rate: str) -> None:
+async def _edge(text: str, path: str, rate: str, voice: str) -> None:
     import edge_tts
-    await edge_tts.Communicate(text, VOICE, rate=rate).save(path)
+    await edge_tts.Communicate(text, voice, rate=rate).save(path)
 
 
-def synth(text: str, path: Path, rate: str) -> None:
+def synth(text: str, path: Path, rate: str, voice: str = VOICE) -> None:
     for attempt in range(3):
         try:
-            asyncio.run(_edge(text, str(path), rate))
+            asyncio.run(_edge(text, str(path), rate, voice))
             if path.exists() and path.stat().st_size > 1000:
                 return
         except Exception as e:  # noqa: BLE001
             print(f"[warn] edge-tts attempt {attempt + 1} failed: {e}")
             time.sleep(3)
     from gtts import gTTS  # free fallback if Microsoft's endpoint blocks the runner IP
-    gTTS(text, lang="en", tld="co.in").save(str(path))
+    gTTS(text, lang="hi" if voice.startswith("hi-") else "en", tld="co.in").save(str(path))
 
 
 def audio_len(path: Path) -> float:
@@ -291,6 +308,7 @@ def with_audio(clip, audio):
 # ----------------------------------------------------------------------------- build one video
 def build_video(idx: int, group: list[dict]) -> dict:
     script = write_script(group)
+    voice = script.get("_voice", VOICE)
     tmp = OUT / "tmp" / f"v{idx}"
     tmp.mkdir(parents=True, exist_ok=True)
 
@@ -311,7 +329,7 @@ def build_video(idx: int, group: list[dict]) -> dict:
         total = 0.0
         for k, s in enumerate(scenes):
             p = tmp / f"s{k}.mp3"
-            synth(s["narration"], p, rate)
+            synth(s["narration"], p, rate, voice)
             s["audio"], s["dur"] = p, audio_len(p) + SCENE_PAD
             total += s["dur"]
         return total
@@ -319,7 +337,7 @@ def build_video(idx: int, group: list[dict]) -> dict:
     total = synth_all(RATE)
     if total > MAX_SECONDS:
         print(f"[warn] video {idx} is {total:.0f}s; re-voicing faster to fit Shorts limit")
-        total = synth_all("+22%")
+        total = synth_all("+15%")
 
     used: set[str] = set()
     credits: list[str] = []
@@ -345,7 +363,7 @@ def build_video(idx: int, group: list[dict]) -> dict:
     for a in audios:
         a.close()
     return {"file": str(path), "title": script["title"][:90], "hashtags": script.get("hashtags", ["#UPSC"])[:8],
-            "duration": round(total, 1), "credits": sorted(set(credits)),
+            "duration": round(total, 1), "voice": voice, "credits": sorted(set(credits)),
             "items": [{"news_id": g["news_id"], "thread_id": g["thread_id"], "headline": g["headline"],
                        "gs_paper": g["gs_paper"]} for g in group]}
 

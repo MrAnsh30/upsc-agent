@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """ONE-TIME, run on your own laptop (needs a browser). Prints a refresh token for the YT_REFRESH_TOKEN secret.
+Uses the full "youtube" scope because the agent must also DELETE videos after 10 days.
 
 1. Google Cloud Console -> create project -> enable "YouTube Data API v3".
 2. OAuth consent screen: set user type External, add yourself as test user, then click
@@ -10,7 +11,7 @@
 from google_auth_oauthlib.flow import InstalledAppFlow
 
 flow = InstalledAppFlow.from_client_secrets_file(
-    "client_secret.json", ["https://www.googleapis.com/auth/youtube.upload"])
+    "client_secret.json", ["https://www.googleapis.com/auth/youtube"])
 creds = flow.run_local_server(port=0, access_type="offline", prompt="consent")
 print("\nYT_CLIENT_ID     =", creds.client_id)
 print("YT_CLIENT_SECRET =", creds.client_secret)

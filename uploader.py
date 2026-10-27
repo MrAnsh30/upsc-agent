@@ -8,14 +8,17 @@ Instagram: Instagram Graph API Reels publishing. Meta must be able to download t
 """
 from __future__ import annotations
 
+import datetime as dt
 import hashlib
 import json
+import os
 import sys
 import time
 
 import requests
 
-from common import NEWS_SHEET, OUT, TOPIC_SHEET, env, open_spreadsheet
+import state_store
+from common import NEWS_SHEET, OUT, ROOT, TOPIC_SHEET, env, open_spreadsheet
 
 GRAPH = f"https://graph.facebook.com/{env('GRAPH_VERSION', 'v23.0')}"   # bump if Meta retires the version
 DO_YT, DO_IG = env("UPLOAD_YT", "1") == "1", env("UPLOAD_IG", "1") == "1"
@@ -24,7 +27,10 @@ DO_YT, DO_IG = env("UPLOAD_YT", "1") == "1", env("UPLOAD_IG", "1") == "1"
 def build_description(meta: dict, sheet_url: str, for_ig: bool = False) -> str:
     lines = [f"• {i['headline']} ({i['gs_paper']})" for i in meta["items"]]
     head = "UPSC Current Affairs – quick revision\n\n" + "\n".join(lines)
-    link = (f"\n\n📚 Full thread-wise revision sheet (GS-mapped, searchable): {sheet_url}"
+    days = env("VIDEO_RETENTION_DAYS", "10")
+    link = (f"\n\n📚 Full thread-wise revision sheet (GS-mapped, updated daily): {sheet_url}"
+            f"\n📚 पूरी रिवीज़न शीट (GS मैपिंग के साथ, रोज़ अपडेट होती है): {sheet_url}"
+            f"\nℹ️ This short is removed after {days} days — the Sheet always stays online and keeps growing."
             + ("\n(Link in bio too — Instagram captions aren't clickable.)" if for_ig else ""))
     credits = ("\n\nImage credits: " + "; ".join(meta["credits"])) if meta["credits"] else ""
     tags = "\n\n" + " ".join(meta["hashtags"] + ["#CurrentAffairs", "#UPSC2027", "#IAS"])
@@ -36,6 +42,7 @@ def build_description(meta: dict, sheet_url: str, for_ig: bool = False) -> str:
 
 # ----------------------------------------------------------------------------- YouTube
 def yt_upload(meta: dict, sheet_url: str) -> str:
+    """Uploads and returns the YouTube video ID."""
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
     from googleapiclient.errors import HttpError
@@ -45,7 +52,7 @@ def yt_upload(meta: dict, sheet_url: str) -> str:
                         token_uri="https://oauth2.googleapis.com/token",
                         client_id=env("YT_CLIENT_ID", required=True),
                         client_secret=env("YT_CLIENT_SECRET", required=True),
-                        scopes=["https://www.googleapis.com/auth/youtube.upload"])
+                        scopes=["https://www.googleapis.com/auth/youtube"])  # full scope: needed to delete later
     yt = build("youtube", "v3", credentials=creds, cache_discovery=False)
     body = {
         "snippet": {"title": f"{meta['title'][:88]} #Shorts", "description": build_description(meta, sheet_url),
@@ -65,7 +72,7 @@ def yt_upload(meta: dict, sheet_url: str) -> str:
                 time.sleep(2 ** tries)
                 continue
             raise
-    return f"https://www.youtube.com/shorts/{resp['id']}"
+    return resp["id"]
 
 
 # ----------------------------------------------------------------------------- Cloudinary staging
@@ -107,7 +114,8 @@ def _graph(method: str, path: str, **kw) -> dict:
     return data
 
 
-def ig_publish(meta: dict, sheet_url: str) -> str:
+def ig_publish(meta: dict, sheet_url: str) -> tuple[str, str]:
+    """Publishes the Reel and returns (media_id, permalink)."""
     ig_id, token = env("IG_USER_ID", required=True), env("IG_ACCESS_TOKEN", required=True)
     video_url, pid = cloudinary_upload(meta["file"])
     try:
@@ -125,7 +133,7 @@ def ig_publish(meta: dict, sheet_url: str) -> str:
             raise RuntimeError("Reel processing timed out")
         media_id = _graph("POST", f"{ig_id}/media_publish", data={"creation_id": c, "access_token": token})["id"]
         info = _graph("GET", media_id, params={"fields": "permalink", "access_token": token})
-        return info.get("permalink", f"https://www.instagram.com/{media_id}")
+        return media_id, info.get("permalink", f"https://www.instagram.com/{media_id}")
     finally:
         cloudinary_delete(pid)
 
@@ -155,31 +163,48 @@ def main() -> int:
     if not manifest["videos"]:
         print("[info] no videos to upload")
         return 0
+    records = state_store.load()
     links: dict[str, str] = {}
     thread_links: dict[str, str] = {}
     failures = 0
     for meta in manifest["videos"]:
-        yt_url = ig_url = ""
+        rec = {
+            "published_at": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+            "title": meta["title"], "file": os.path.relpath(meta["file"], ROOT),
+            "news_ids": [i["news_id"] for i in meta["items"]],
+            "thread_ids": sorted({i["thread_id"] for i in meta["items"]}),
+            "youtube_id": "", "youtube_url": "", "instagram_id": "", "instagram_url": "",
+        }
+
+        def keep(rec=rec):  # persist immediately so a crash can never lose a published video's ID
+            if rec not in records:
+                records.append(rec)
+            state_store.save(records)
+
         if DO_YT and not meta.get("youtube_url"):
             try:
-                yt_url = meta["youtube_url"] = yt_upload(meta, manifest["sheet_url"])
-                print(f"[ok] YouTube: {yt_url}")
+                rec["youtube_id"] = yt_upload(meta, manifest["sheet_url"])
+                rec["youtube_url"] = meta["youtube_url"] = f"https://www.youtube.com/shorts/{rec['youtube_id']}"
+                keep()
+                print(f"[ok] YouTube: {rec['youtube_url']}")
             except Exception as e:  # noqa: BLE001
                 failures += 1
                 print(f"[error] YouTube upload failed: {e}")
         if DO_IG and not meta.get("instagram_url"):
             try:
-                ig_url = meta["instagram_url"] = ig_publish(meta, manifest["sheet_url"])
-                print(f"[ok] Instagram: {ig_url}")
+                rec["instagram_id"], rec["instagram_url"] = ig_publish(meta, manifest["sheet_url"])
+                meta["instagram_url"] = rec["instagram_url"]
+                keep()
+                print(f"[ok] Instagram: {rec['instagram_url']}")
             except Exception as e:  # noqa: BLE001
                 failures += 1
                 print(f"[error] Instagram publish failed: {e}")
-        best = meta.get("youtube_url") or meta.get("instagram_url") or ""
+        best = rec["youtube_url"] or rec["instagram_url"]
         if best:
             for it in meta["items"]:
                 links[it["news_id"]] = best
                 thread_links[it["thread_id"]] = best
-        mpath.write_text(json.dumps(manifest, ensure_ascii=False, indent=2))  # persist progress
+        mpath.write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
     if links:
         backfill(links, thread_links)
     return 1 if failures else 0
