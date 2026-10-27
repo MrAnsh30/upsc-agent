@@ -57,11 +57,15 @@ def write_script(group: list[dict]) -> dict:
     listing = "\n".join(f"[{i}] {g['headline']} | {g['summary']} | GS: {g['gs_paper']} | "
                         f"Thread: {g['thread_title']}" for i, g in enumerate(group))
     if NARRATION_LANG == "hi":
-        lang_rule = ("NARRATION LANGUAGE: natural, spoken HINDI written in Devanagari script (simple conversational Hindi "
-                     "that a UPSC student would use, not heavy Sanskritised words). Write English acronyms and proper nouns "
-                     "the way they are SPOKEN in Hindi, in Devanagari (e.g. यूपीआई, इसरो, ब्रिक्स, जीएसटी, संयुक्त राष्ट्र), "
-                     "so the voice pronounces them correctly. ON-SCREEN TEXT (title, hook.screen, screen_title, bullets) "
-                     "MUST stay in ENGLISH, exactly as an English video would show it.")
+        lang_rule = ("NARRATION LANGUAGE: VERY SIMPLE, everyday spoken Hindi written in Devanagari - the Hindi people use in "
+                     "daily talk, which a Class 8 student or a person from any state can understand at once. "
+                     "RULES: (1) short sentences, at most 12 words each; (2) NO difficult, formal or Sanskritised words - use the "
+                     "easy word (e.g. फैसला not निर्णय, सरकार not शासन, मदद not सहायता, पैसा not धनराशि, बढ़ाना not वृद्धि करना, "
+                     "नियम not विधान, बताया not उद्घोषित किया); (3) words that Hindi speakers already use from English are GOOD - "
+                     "keep them but write them in Devanagari (बजट, रिपोर्ट, पॉलिसी, एग्ज़ाम, कोर्ट, यूपीआई, इसरो, ब्रिक्स, जीएसटी); "
+                     "(4) if a topic has a hard term, explain it in one easy line; (5) sound like a friendly teacher talking, "
+                     "not like a news reader. ON-SCREEN TEXT (title, hook.screen, screen_title, bullets) MUST stay in ENGLISH, "
+                     "exactly as an English video would show it.")
         budget = "hook <= 12 words, each scene narration <= 20 words, outro <= 12 words (counted in Hindi words)"
         outro_hint = 'e.g. "पूरे नोट्स डिस्क्रिप्शन में हैं। रोज़ की रिवीज़न के लिए फ़ॉलो करें।"'
     else:
