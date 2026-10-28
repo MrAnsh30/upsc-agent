@@ -186,6 +186,20 @@ def img_pexels(q: str):
     return (ph["src"]["large2x"], f"Photo by {ph['photographer']} on Pexels") if ph else None
 
 
+def img_pixabay(q: str):
+    """Pixabay API (free key, automated use allowed). We download the file; hits must match the topic."""
+    key = env("PIXABAY_API_KEY")
+    if not key:
+        return None
+    r = requests.get("https://pixabay.com/api/", headers=UA, timeout=25, params={
+        "key": key, "q": q, "image_type": "photo", "orientation": "vertical", "min_width": 700,
+        "safesearch": "true", "per_page": 8})
+    for h in (r.json().get("hits") or []):
+        if _relevant(q, h.get("tags", "")):
+            return h["largeImageURL"], f"Image by {h.get('user', 'Unknown')} from Pixabay"
+    return None
+
+
 def img_unsplash(q: str):
     key = env("UNSPLASH_ACCESS_KEY")
     if not key:
@@ -209,7 +223,7 @@ def gradient_bg(seed: str) -> Image.Image:
 
 
 def get_background(query: str, used: set[str]) -> tuple[Image.Image, str]:
-    for fn in (img_wikimedia, img_pexels, img_unsplash):
+    for fn in (img_wikimedia, img_pexels, img_pixabay):   # Unsplash is not used: its API terms forbid automated use
         try:
             hit = fn(query)
             if not hit or hit[0] in used:
