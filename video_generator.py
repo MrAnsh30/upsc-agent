@@ -79,7 +79,9 @@ and an outro {outro_hint}. Word budget: {budget}. No emojis or hashtags inside n
 FACT RULES (very important, this is exam revision): use ONLY facts that are written in the item text above. Do not add outside
 facts, names, years or results. Keep every qualifier: if the item says "proposed", "permitted", "only for special vehicles" or
 "according to a report", say that - never turn a proposal into a done decision or a limited rule into a general one. Do not say
-"now", "today", "new" or "recently" unless the item itself says so.
+"now", "today", "new" or "recently" unless the item itself says so. Never upgrade a claim: "among the top" must stay
+"among the top" (not "the highest"), "may"/"critics say" must stay hedged, "first" and "only" only if the item says it.
+Write English names the way they sound in Devanagari (e.g. Lancet = लैंसेट, WHO = डब्ल्यूएचओ).
 {lang_rule}
 Return JSON: {{"title":"<=70 chars, ENGLISH, specific: name the 2 biggest topics of THIS video (never a generic title like 'Daily Current Affairs Revision')","hook":{{"text":"<narration>","screen":"<=8 words ENGLISH"}},
 "scenes":[{{"i":0,"narration":"<narration>","screen_title":"<=12 words ENGLISH","bullets":["<=9 words ENGLISH"]}}],
@@ -136,7 +138,11 @@ def _strip(s: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s or "")).strip()
 
 
-_STOP = {"the", "and", "for", "with", "from", "photo", "image", "picture", "building", "view", "new", "old"}
+_STOP = {"the", "and", "for", "with", "from", "photo", "image", "picture", "view", "new", "old",
+         # abstract / generic words that match unrelated photos (e.g. "summit" -> a mountain peak)
+         "india", "indian", "summit", "climate", "change", "international", "meeting", "diplomatic", "diplomacy",
+         "political", "economic", "government", "policy", "relations", "global", "world", "national", "people",
+         "vulnerable", "elderly", "elder", "social", "public", "crisis", "risk", "impact", "stance"}
 
 
 def _relevant(query: str, text: str) -> bool:
@@ -146,7 +152,7 @@ def _relevant(query: str, text: str) -> bool:
     words = [w for w in re.findall(r"[a-z]{3,}", query.lower()) if w not in _STOP]
     if not words:
         return False
-    need = max(1, min(2, len(words) // 2))
+    need = 2 if len(words) >= 2 else 1
     if sum(1 for w in words if w in text) < need:
         return False
     return not re.search(r"\b(1[89]\d{2}|200[0-4])\b", text)
@@ -223,6 +229,8 @@ def gradient_bg(seed: str) -> Image.Image:
 
 
 def get_background(query: str, used: set[str]) -> tuple[Image.Image, str]:
+    if not query.strip():                       # the news writer found nothing concrete to photograph
+        return gradient_bg("plain"), ""
     for fn in (img_wikimedia, img_pexels, img_pixabay):   # Unsplash is not used: its API terms forbid automated use
         try:
             hit = fn(query)

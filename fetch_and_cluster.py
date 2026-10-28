@@ -145,8 +145,10 @@ RULES
   event completed). A ceasefire, pause or talks is NOT conclusion.
 - category must be one of: {json.dumps(CATEGORIES)}
 - gs_paper one of GS1, GS2, GS3, GS4, Prelims. syllabus_mapping like "GS2 - International Relations: India and neighbourhood".
-- image_query: 3-5 generic words for a stock/Wikimedia photo (e.g. "Parliament of India building"). Name the
-  COUNTRY or place (e.g. "India", "Telangana") and avoid people's names unless the story is about that person.
+- image_query: 2-4 words for something you can really PHOTOGRAPH that clearly shows THIS story - a building, place,
+  landscape, weather, object or crowd (e.g. "Supreme Court of India building", "satellite image cyclone",
+  "Delhi smog India Gate", "electronic voting machine"). Never abstract ideas (diplomacy, summit, climate change,
+  vulnerability, relations). If nothing concrete fits, use an EMPTY string "" - a plain background is better than a wrong photo.
 - ACCURACY: use only facts that appear in the article text/snippet. Keep every qualifier (proposed vs approved,
   permitted vs mandatory, "only for X", "according to a report"). Never turn a limited or optional rule into a general one.
   Do not add outside facts, names, numbers or results.
@@ -235,7 +237,7 @@ def upsert(items: list[dict], threads: dict[str, dict], today: dt.date) -> tuple
             "headline": it["headline"], "summary": it["summary"], "key_points": it.get("key_points", []),
             "prelims_facts": it.get("prelims_facts", []), "category": it.get("category", ""),
             "gs_paper": it.get("gs_paper", ""), "source": a["source"],
-            "image_query": it.get("image_query") or it["headline"], "ongoing": t["Status"] == "ONGOING"})
+            "image_query": (it.get("image_query") or "").strip(), "ongoing": t["Status"] == "ONGOING"})
     return news_rows, bundle
 
 
