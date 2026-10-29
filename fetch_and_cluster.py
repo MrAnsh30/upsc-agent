@@ -33,6 +33,7 @@ FEEDS = [
 ]
 UA = {"User-Agent": "Mozilla/5.0 (compatible; UPSC-CA-Agent/1.0)"}
 LOOKBACK_HOURS = int(env("LOOKBACK_HOURS", "30"))
+PREVIEW = env("PREVIEW_MODE", "0") == "1"   # rebuild videos from today's stories WITHOUT touching the Sheet
 STALE_ARTICLE_DAYS = int(env("STALE_ARTICLE_DAYS", "21"))  # drop stories whose page says they are older than this
 MAX_ITEMS = int(env("MAX_ITEMS", "20"))
 BATCH = 6
@@ -275,15 +276,17 @@ def main() -> int:
     sh = open_spreadsheet()
     ws_t = ensure_ws(sh, TOPIC_SHEET, TOPIC_HEADERS)
     ws_n = ensure_ws(sh, NEWS_SHEET, NEWS_HEADERS)
-    try:  # make the Master Sheet readable by students (needs owner/editor rights; harmless if it fails)
-        sh.share(None, perm_type="anyone", role="reader")
-    except Exception as e:  # noqa: BLE001
-        print(f"[info] could not auto-share (set 'Anyone with link: Viewer' manually once): {e}")
-
-    maintain_and_purge(sh, ws_t, ws_n, today)
+    if PREVIEW:
+        print("[preview] PREVIEW MODE: stories already used before are processed again; the Sheet will NOT be changed")
+    else:
+        try:  # make the Master Sheet readable by students (needs owner/editor rights; harmless if it fails)
+            sh.share(None, perm_type="anyone", role="reader")
+        except Exception as e:  # noqa: BLE001
+            print(f"[info] could not auto-share (set 'Anyone with link: Viewer' manually once): {e}")
+        maintain_and_purge(sh, ws_t, ws_n, today)
 
     threads = read_threads(ws_t)
-    known_ids = set(ws_n.col_values(1))
+    known_ids = set() if PREVIEW else set(ws_n.col_values(1))
     arts = [a for a in fetch_articles() if a["id"] not in known_ids]
     bundle_path = OUT / "bundle.json"
     if not arts:
@@ -312,12 +315,12 @@ def main() -> int:
         news_rows.extend(rows)
         bundle.extend(items)
 
-    if news_rows:
+    if news_rows and not PREVIEW:
         ws_n.append_rows(news_rows, value_input_option="RAW")
         write_threads(ws_t, threads)
     bundle_path.write_text(json.dumps({"date": today.isoformat(), "sheet_url": sheet_url(sh),
                                        "items": bundle}, ensure_ascii=False, indent=2))
-    print(f"[done] {len(news_rows)} items added, {len(threads)} threads tracked")
+    print(f"[done] {len(news_rows)} items " + ("prepared (PREVIEW - Sheet unchanged)" if PREVIEW else "added") + f", {len(threads)} threads tracked")
     return 0
 
 
