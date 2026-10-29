@@ -73,9 +73,20 @@ for _n, _words in {
         _HI_NUM[_w] = _n
 
 
+_ACRONYMS = {  # written as one word they are mispronounced or garbled (e.g. यूपीयूएससी); spoken letter by letter they are clear
+    "यूपीयूएससी": "यू पी एस सी", "यूपीएससी": "यू पी एस सी", "डीपीपीडीपी": "डी पी डी पी", "डीपीडीपी": "डी पी डी पी",
+    "आईटी": "आई टी", "एससीओ": "एस सी ओ", "जीएसटी": "जी एस टी", "जीएस": "जी एस", "पीटीए": "पी टी ए",
+    "आरबीआई": "आर बी आई", "सीबीआई": "सी बी आई", "ईसीआई": "ई सी आई", "एनडीए": "एन डी ए", "डब्ल्यूएचओ": "डब्ल्यू एच ओ",
+    "इसरो": "इसरो", "एआई": "ए आई", "यूएन": "यू एन", "सीआरएमए": "सी आर एम ए",
+}
+
+
 def clean_hindi(text: str) -> str:
-    """Remove a nukta that sits after a vowel sign (a typing glitch like डीपी़डीपी that confuses the voice)."""
-    return re.sub("(?<=[\u093e-\u094c])\u093c", "", text)
+    """Fix typing glitches the voice cannot read: stray nukta after a vowel sign, and acronyms (spoken letter by letter)."""
+    text = re.sub("(?<=[\u093e-\u094c])\u093c", "", text)
+    for word, spoken in _ACRONYMS.items():
+        text = re.sub(f"(?<![\u0900-\u097F]){word}(?![\u0900-\u097F])", spoken, text)
+    return text
 
 
 def check_numbers(script: dict, group: list[dict]) -> list[str]:
@@ -123,6 +134,13 @@ facts, names, years or results. Keep every qualifier: if the item says "proposed
 "now", "today", "new" or "recently" unless the item itself says so. Never upgrade a claim: "among the top" must stay
 "among the top" (not "the highest"), "may"/"critics say" must stay hedged, "first" and "only" only if the item says it.
 Write English names the way they sound in Devanagari (e.g. Lancet = लैंसेट, WHO = डब्ल्यूएचओ).
+EACH SCENE must contain at least one concrete fact from its item (a number, name, place or date) - not a vague line like
+"relations are getting stronger". Do not promise or guess exam questions ("this will surely come") - the hook is just a simple
+question about the news. If an item says "experimental", "promising" or "proposed", keep that word - never say a treatment or
+plan "works" or "is done". Do not translate technical terms loosely: "Terms of Reference" = the framework/starting document for
+negotiations (NOT "terms and conditions"); say what stage the news is at (talks start / agreement signed). On-screen titles must
+not claim more than the news (write "ToR signed", not "PTA signed"). Read codes digit by digit (CRMA-1001 = एक शून्य शून्य एक).
+Say acronyms letter by letter in Devanagari with spaces: यू पी एस सी, डी पी डी पी, जी एस दो.
 NUMBERS: say every number exactly as in the item and DOUBLE-CHECK the Hindi number word (62,124 is बासठ हज़ार, not इकसठ; 78% is अठहत्तर).
 Use "करीब" for rounded figures. Never use Latin letters in narration (write टारगेट, not target). Do not put a nukta (़) on letters that
 do not need it (write डीपीडीपी). Do not stack several English jargon words in one sentence - say it in easy Hindi first.
