@@ -54,6 +54,47 @@ def group_items(items: list[dict]) -> list[list[dict]]:
     return [items[i:i + size] for i in range(0, len(items), size)]
 
 
+# ----------------------------------------------------------------------------- script quality guards
+_HI_NUM = {}
+for _n, _words in {
+    21: "इक्कीस", 22: "बाईस", 23: "तेईस", 24: "चौबीस", 25: "पच्चीस", 26: "छब्बीस", 27: "सत्ताईस", 28: "अट्ठाईस अठाईस",
+    29: "उनतीस", 30: "तीस", 31: "इकतीस", 32: "बत्तीस", 33: "तैंतीस", 34: "चौंतीस", 35: "पैंतीस", 36: "छत्तीस",
+    37: "सैंतीस", 38: "अड़तीस", 39: "उनतालीस", 40: "चालीस", 41: "इकतालीस", 42: "बयालीस", 43: "तैंतालीस",
+    44: "चौवालीस चवालीस", 45: "पैंतालीस", 46: "छियालीस", 47: "सैंतालीस", 48: "अड़तालीस", 49: "उनचास", 50: "पचास",
+    51: "इक्यावन", 52: "बावन", 53: "तिरपन तिरेपन", 54: "चौवन", 55: "पचपन", 56: "छप्पन", 57: "सत्तावन",
+    58: "अट्ठावन अठावन", 59: "उनसठ", 60: "साठ", 61: "इकसठ", 62: "बासठ", 63: "तिरसठ", 64: "चौंसठ", 65: "पैंसठ",
+    66: "छियासठ", 67: "सड़सठ", 68: "अड़सठ", 69: "उनहत्तर", 70: "सत्तर", 71: "इकहत्तर", 72: "बहत्तर", 73: "तिहत्तर",
+    74: "चौहत्तर", 75: "पचहत्तर", 76: "छिहत्तर", 77: "सतहत्तर", 78: "अठहत्तर अठत्तर", 79: "उनासी", 80: "अस्सी",
+    81: "इक्यासी", 82: "बयासी", 83: "तिरासी", 84: "चौरासी", 85: "पचासी", 86: "छियासी", 87: "सत्तासी",
+    88: "अट्ठासी अठासी", 89: "नवासी", 90: "नब्बे", 91: "इक्यानवे", 92: "बानवे", 93: "तिरानवे", 94: "चौरानवे",
+    95: "पंचानवे", 96: "छियानवे", 97: "सत्तानवे", 98: "अट्ठानवे अठानवे", 99: "निन्यानवे निन्यानबे",
+}.items():
+    for _w in _words.split():
+        _HI_NUM[_w] = _n
+
+
+def clean_hindi(text: str) -> str:
+    """Remove a nukta that sits after a vowel sign (a typing glitch like डीपी़डीपी that confuses the voice)."""
+    return re.sub("(?<=[\u093e-\u094c])\u093c", "", text)
+
+
+def check_numbers(script: dict, group: list[dict]) -> list[str]:
+    """Hindi number words above 20 must match a number in that item's own text (catches 62,124 -> 'इकसठ' = 61)."""
+    problems = []
+    for sc in script.get("scenes", []):
+        i = sc.get("i")
+        if not isinstance(i, int) or not 0 <= i < len(group):
+            continue
+        g = group[i]
+        blob = " ".join([g["headline"], g["summary"]] + list(g.get("key_points", [])) + list(g.get("prelims_facts", [])))
+        digits = "".join(re.findall(r"\d+", re.sub(r"(?<=\d),(?=\d)", "", blob)))
+        for w in re.findall(r"[\u0900-\u097F]+", sc.get("narration", "")):
+            v = _HI_NUM.get(w)
+            if v and str(v) not in digits:
+                problems.append(f"scene {i}: '{w}' means {v}, but the item text has no {v}")
+    return problems
+
+
 def write_script(group: list[dict]) -> dict:
     listing = "\n".join(f"[{i}] {g['headline']} | {g['summary']} | Key points: {'; '.join(g.get('key_points', []))} | "
                         f"GS: {g['gs_paper']} | Thread: {g['thread_title']}" for i, g in enumerate(group))
@@ -82,6 +123,9 @@ facts, names, years or results. Keep every qualifier: if the item says "proposed
 "now", "today", "new" or "recently" unless the item itself says so. Never upgrade a claim: "among the top" must stay
 "among the top" (not "the highest"), "may"/"critics say" must stay hedged, "first" and "only" only if the item says it.
 Write English names the way they sound in Devanagari (e.g. Lancet = लैंसेट, WHO = डब्ल्यूएचओ).
+NUMBERS: say every number exactly as in the item and DOUBLE-CHECK the Hindi number word (62,124 is बासठ हज़ार, not इकसठ; 78% is अठहत्तर).
+Use "करीब" for rounded figures. Never use Latin letters in narration (write टारगेट, not target). Do not put a nukta (़) on letters that
+do not need it (write डीपीडीपी). Do not stack several English jargon words in one sentence - say it in easy Hindi first.
 {lang_rule}
 Return JSON: {{"title":"<=70 chars, ENGLISH, specific: name the 2 biggest topics of THIS video (never a generic title like 'Daily Current Affairs Revision')","hook":{{"text":"<narration>","screen":"<=8 words ENGLISH"}},
 "scenes":[{{"i":0,"narration":"<narration>","screen_title":"<=12 words ENGLISH","bullets":["<=9 words ENGLISH"]}}],
@@ -95,6 +139,23 @@ ITEMS:
         if NARRATION_LANG == "hi":
             spoken = " ".join([s["hook"]["text"], s.get("outro", "")] + [x["narration"] for x in s["scenes"]])
             assert re.search(r"[\u0900-\u097F]", spoken), "narration is not Hindi"
+            problems = check_numbers(s, group)
+            if problems:
+                print(f"[warn] number check failed, asking the writer to fix: {problems}")
+                try:
+                    s2 = llm_json(prompt + "\n\nYOUR PREVIOUS ANSWER HAD NUMBER ERRORS. Fix them (say each number exactly as in the item): "
+                                  + "; ".join(problems))
+                    if s2.get("scenes") and s2.get("hook") and len(check_numbers(s2, group)) < len(problems):
+                        s = s2
+                except Exception as e2:  # noqa: BLE001
+                    print(f"[warn] number re-check failed: {e2}")
+                left = check_numbers(s, group)
+                if left:
+                    print(f"[warn] NUMBER PROBLEMS REMAIN - check this video before publishing: {left}")
+            s["hook"]["text"] = clean_hindi(s["hook"]["text"])
+            s["outro"] = clean_hindi(s.get("outro", ""))
+            for x in s["scenes"]:
+                x["narration"] = clean_hindi(x["narration"])
         return s
     except Exception as e:  # noqa: BLE001 - deterministic fallback so the pipeline never stalls
         print(f"[warn] script LLM failed ({e}); using English fallback script + English voice")
