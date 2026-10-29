@@ -3,7 +3,12 @@ name: UPSC daily agent
 on:
   schedule:
     - cron: "30 0 * * *"      # 00:30 UTC = 06:00 IST (GitHub may delay scheduled runs by 10-60+ min)
-  workflow_dispatch: {}        # manual "Run workflow" button for testing
+  workflow_dispatch:           # manual "Run workflow" button for testing
+    inputs:
+      preview:
+        description: "Preview: rebuild videos from today's stories WITHOUT changing the Sheet (tick for tests)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write              # used to save state/published.json + the keep-alive commit
@@ -44,6 +49,7 @@ jobs:
       TTS_RATE: "-4%"
       VIDEO_RETENTION_DAYS: "10" # videos are deleted from YouTube, Instagram and local storage after this many days
       CLEANUP_DRY_RUN: "0"       # set to "1" to only PRINT what would be deleted
+      PREVIEW_MODE: ${{ github.event.inputs.preview == 'true' && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
 
