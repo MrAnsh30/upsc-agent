@@ -84,6 +84,17 @@ _ACRONYMS = {  # written as one word they are mispronounced or garbled (e.g. य
 _MISSPELLINGS = {"अट्ठाबीस": "अट्ठाईस", "अठाबीस": "अट्ठाईस", "उन्तीस": "उनतीस", "इक्कतीस": "इकतीस"}   # number words the AI sometimes mangles
 
 
+for _n, _words in {3: "तीन", 4: "चार", 5: "पांच पाँच", 6: "छह छः छे", 7: "सात", 8: "आठ", 9: "नौ", 10: "दस", 11: "ग्यारह",
+                   12: "बारह", 13: "तेरह", 14: "चौदह", 15: "पंद्रह पन्द्रह", 16: "सोलह", 17: "सत्रह", 18: "अठारह",
+                   19: "उन्नीस", 20: "बीस"}.items():
+    for _w in _words.split():
+        _HI_NUM[_w] = _n
+_HI_NUM["अट्ठाइस"] = 28
+_EN_NUM = {"three": 3, "four": 4, "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+           "thirteen": 13, "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19,
+           "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90}
+
+
 def clean_hindi(text: str) -> str:
     """Fix typing glitches the voice cannot read: stray nukta after a vowel sign, and acronyms (spoken letter by letter)."""
     text = re.sub("(?<=[\u093e-\u094c])\u093c", "", text)
@@ -102,8 +113,9 @@ def check_numbers(script: dict, group: list[dict]) -> list[str]:
         if not isinstance(i, int) or not 0 <= i < len(group):
             continue
         g = group[i]
-        blob = " ".join([g["headline"], g["summary"]] + list(g.get("key_points", [])) + list(g.get("prelims_facts", [])))
-        digits = "".join(re.findall(r"\d+", re.sub(r"(?<=\d),(?=\d)", "", blob)))
+        blob = " ".join([g["headline"], g["summary"], g.get("gs_paper", "")] + list(g.get("key_points", [])) + list(g.get("prelims_facts", [])))
+        words_as_digits = "".join(str(v) for w, v in _EN_NUM.items() if re.search(rf"\b{w}(?:th|rd|nd)?\b", blob.lower()))
+        digits = words_as_digits + "".join(re.findall(r"\d+", re.sub(r"(?<=\d),(?=\d)", "", blob)))
         for w in re.findall(r"[\u0900-\u097F]+", sc.get("narration", "")):
             v = _HI_NUM.get(w)
             if v and str(v) not in digits:
@@ -144,7 +156,7 @@ EACH SCENE must contain at least one concrete fact from its item (a number, name
 question about the news. If an item says "experimental", "promising" or "proposed", keep that word - never say a treatment or
 plan "works" or "is done". Do not translate technical terms loosely: "Terms of Reference" = the framework/starting document for
 negotiations (NOT "terms and conditions"); say what stage the news is at (talks start / agreement signed). On-screen titles must
-not claim more than the news (write "ToR signed", not "PTA signed"). Read codes digit by digit (CRMA-1001 = एक शून्य शून्य एक).
+not claim more than the news (write "ToR signed", not "PTA signed"). Read codes digit by digit (CRMA-1001 = एक शून्य शून्य एक). Read years in full (IT Rules 2021 = "दो हज़ार इक्कीस", never just "इक्कीस").
 Do not invent cause and effect: "coincided with", "amid" and "during" are NOT "because of"; "criticised" or "questioned" is NOT
 "declared wrong/illegal". Explain technical terms in easy Hindi (GLOF = "ग्लेशियर की झील फटने से आई बाढ़"), do not just read the English words.
 Say acronyms letter by letter in Devanagari with spaces: यू पी एस सी, डी पी डी पी, जी एस दो.
