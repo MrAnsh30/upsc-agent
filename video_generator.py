@@ -81,9 +81,14 @@ _ACRONYMS = {  # written as one word they are mispronounced or garbled (e.g. य
 }
 
 
+_MISSPELLINGS = {"अट्ठाबीस": "अट्ठाईस", "अठाबीस": "अट्ठाईस", "उन्तीस": "उनतीस", "इक्कतीस": "इकतीस"}   # number words the AI sometimes mangles
+
+
 def clean_hindi(text: str) -> str:
     """Fix typing glitches the voice cannot read: stray nukta after a vowel sign, and acronyms (spoken letter by letter)."""
     text = re.sub("(?<=[\u093e-\u094c])\u093c", "", text)
+    for bad, good in _MISSPELLINGS.items():
+        text = text.replace(bad, good)
     for word, spoken in _ACRONYMS.items():
         text = re.sub(f"(?<![\u0900-\u097F]){word}(?![\u0900-\u097F])", spoken, text)
     return text
@@ -140,6 +145,8 @@ question about the news. If an item says "experimental", "promising" or "propose
 plan "works" or "is done". Do not translate technical terms loosely: "Terms of Reference" = the framework/starting document for
 negotiations (NOT "terms and conditions"); say what stage the news is at (talks start / agreement signed). On-screen titles must
 not claim more than the news (write "ToR signed", not "PTA signed"). Read codes digit by digit (CRMA-1001 = एक शून्य शून्य एक).
+Do not invent cause and effect: "coincided with", "amid" and "during" are NOT "because of"; "criticised" or "questioned" is NOT
+"declared wrong/illegal". Explain technical terms in easy Hindi (GLOF = "ग्लेशियर की झील फटने से आई बाढ़"), do not just read the English words.
 Say acronyms letter by letter in Devanagari with spaces: यू पी एस सी, डी पी डी पी, जी एस दो.
 NUMBERS: say every number exactly as in the item and DOUBLE-CHECK the Hindi number word (62,124 is बासठ हज़ार, not इकसठ; 78% is अठहत्तर).
 Use "करीब" for rounded figures. Never use Latin letters in narration (write टारगेट, not target). Do not put a nukta (़) on letters that
