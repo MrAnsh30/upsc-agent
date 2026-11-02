@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "published_at": "2026-11-02T06:32:40+00:00",
+    "title": "UPSC Current Affairs: October GST collections surge 23% to ₹2.31 lakh cr",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "ace769bd15a8",
+      "2a8077f30d6c",
+      "0e8d7dbf561a"
+    ],
+    "thread_ids": [
+      "cyclone-arnab-landfall-and-impact-in-and-d657",
+      "digi-yatra-expansion-and-international-t-0e1c",
+      "gst-collections-and-revenue-trends-7aab"
+    ],
+    "youtube_id": "cH48omHkQWo",
+    "youtube_url": "https://www.youtube.com/shorts/cH48omHkQWo",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-02T06:32:42+00:00",
+    "title": "CRMA-1001 Gene Therapy & India Unemployment Rate",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "29a407ace633",
+      "852485dc3938"
+    ],
+    "thread_ids": [
+      "gene-therapy-and-viral-dna-silencing-tec-1ecb",
+      "informal-labour-and-decent-work-deficit--c494"
+    ],
+    "youtube_id": "lFnQp5xVBVk",
+    "youtube_url": "https://www.youtube.com/shorts/lFnQp5xVBVk",
+    "instagram_id": "",
+    "instagram_url": ""
+  }
+]
