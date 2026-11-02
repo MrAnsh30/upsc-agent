@@ -9,6 +9,14 @@ on:
         description: "Preview: rebuild videos from today's stories WITHOUT changing the Sheet (tick for tests)"
         type: boolean
         default: false
+      upload_youtube:
+        description: "Upload the videos to YouTube as PRIVATE (for testing the upload)"
+        type: boolean
+        default: false
+      retention_days:
+        description: "Days before videos are deleted (normal = 10; type 0 to test deletion right now)"
+        type: string
+        default: "10"
 
 permissions:
   contents: write              # used to save state/published.json + the keep-alive commit
@@ -42,12 +50,12 @@ jobs:
       YT_PRIVACY: "private"      # set to "public" after your YouTube API audit is approved
       PYTHONUNBUFFERED: "1"
       GEMINI_MODEL: "gemini-3.5-flash-lite"
-      UPLOAD_YT: "0"             # set to "1" once YouTube is set up
+      UPLOAD_YT: ${{ github.event.inputs.upload_youtube == 'true' && '1' || '0' }}   # only a manual run with the box ticked uploads
       UPLOAD_IG: "0"             # set to "1" once Instagram is set up
       NARRATION_LANG: "hi"       # Hindi voice-over (on-screen text stays English); "en" = English voice
       TTS_VOICE: "hi-IN-SwaraNeural"
       TTS_RATE: "-4%"
-      VIDEO_RETENTION_DAYS: "10" # videos are deleted from YouTube, Instagram and local storage after this many days
+      VIDEO_RETENTION_DAYS: ${{ github.event.inputs.retention_days || '10' }}   # videos are deleted after this many days
       CLEANUP_DRY_RUN: "0"       # set to "1" to only PRINT what would be deleted
       PREVIEW_MODE: ${{ github.event.inputs.preview == 'true' && '1' || '0' }}
     steps:
