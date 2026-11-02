@@ -55,5 +55,47 @@
     "youtube_url": "https://www.youtube.com/shorts/HXCmWf6Rp9s",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-02T06:07:49+00:00",
+    "title": "GST Reaches 2.31 Lakh Crore and El Niño Impact on Monsoons",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "ace769bd15a8",
+      "f0bd35200420",
+      "7829d800cd09",
+      "853898046a36"
+    ],
+    "thread_ids": [
+      "consumer-credit-and-no-cost-emi-transpar-9e39",
+      "gst-collections-and-revenue-trends-7aab",
+      "indian-monsoon-dynamics-and-climate-vari-d781",
+      "judicial-reforms-in-india-e167"
+    ],
+    "youtube_id": "KDm9oZY1km8",
+    "youtube_url": "https://www.youtube.com/shorts/KDm9oZY1km8",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-02T06:07:51+00:00",
+    "title": "Exam Leaks, Digi Yatra & Gene Therapy",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "5e26856700bc",
+      "0e8d7dbf561a",
+      "29a407ace633",
+      "852485dc3938"
+    ],
+    "thread_ids": [
+      "competitive-examination-integrity-and-re-e9f5",
+      "digi-yatra-expansion-and-international-t-0e1c",
+      "gene-therapy-and-viral-dna-silencing-tec-1ecb",
+      "informal-labour-and-decent-work-deficit--c494"
+    ],
+    "youtube_id": "5okbbNjohfI",
+    "youtube_url": "https://www.youtube.com/shorts/5okbbNjohfI",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
