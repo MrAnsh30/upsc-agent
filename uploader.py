@@ -205,8 +205,10 @@ def main() -> int:
                 links[it["news_id"]] = best
                 thread_links[it["thread_id"]] = best
         mpath.write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
-    if links:
+    if links and env("PREVIEW_MODE", "0") != "1":     # a preview/test run must never write links into the real Sheet rows
         backfill(links, thread_links)
+    elif links:
+        print("[preview] Sheet links not written (preview mode)")
     return 1 if failures else 0
 
 
