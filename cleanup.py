@@ -103,7 +103,7 @@ def mark_links_removed(removed_urls: set[str]) -> None:
 
     sh = open_spreadsheet()
     ws_n, ws_t = sh.worksheet(NEWS_SHEET), sh.worksheet(TOPIC_SHEET)
-    msg = f"Video removed after {DAYS} days"
+    msg = "Video expired and removed"   # no day count: test runs use 0 days, which would read oddly
     for ws, col_name in ((ws_n, "Related_Video_URL"), (ws_t, "Latest_Video_URL")):
         col = ws.row_values(1).index(col_name) + 1
         vals = ws.col_values(col)
