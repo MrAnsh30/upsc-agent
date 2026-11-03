@@ -41,7 +41,7 @@ def build_description(meta: dict, sheet_url: str, for_ig: bool = False) -> str:
 
 
 # ----------------------------------------------------------------------------- YouTube
-def yt_upload(meta: dict, sheet_url: str) -> str:
+def yt_upload(meta: dict, sheet_url: str) -> tuple[str, str]:
     """Uploads and returns the YouTube video ID."""
     from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
@@ -72,7 +72,7 @@ def yt_upload(meta: dict, sheet_url: str) -> str:
                 time.sleep(2 ** tries)
                 continue
             raise
-    return resp["id"]
+    return resp["id"], (resp.get("status") or {}).get("privacyStatus", "unknown")   # (video id, privacy YouTube really applied)
 
 
 # ----------------------------------------------------------------------------- Cloudinary staging
@@ -183,10 +183,14 @@ def main() -> int:
 
         if DO_YT and not meta.get("youtube_url"):
             try:
-                rec["youtube_id"] = yt_upload(meta, manifest["sheet_url"])
+                rec["youtube_id"], actual = yt_upload(meta, manifest["sheet_url"])
                 rec["youtube_url"] = meta["youtube_url"] = f"https://www.youtube.com/shorts/{rec['youtube_id']}"
                 keep()
-                print(f"[ok] YouTube: {rec['youtube_url']}")
+                print(f"[ok] YouTube: {rec['youtube_url']}   (privacy applied by YouTube: {actual})")
+                wanted = env("YT_PRIVACY", "public")
+                if actual not in ("unknown", wanted):
+                    print(f"[notice] You asked for '{wanted}' but YouTube set '{actual}'. For a new API project this usually means the "
+                          "compliance audit is still needed before uploads can be public.")
             except Exception as e:  # noqa: BLE001
                 failures += 1
                 print(f"[error] YouTube upload failed: {e}")
