@@ -13,6 +13,15 @@ on:
         description: "Upload the videos to YouTube as PRIVATE (for testing the upload)"
         type: boolean
         default: false
+      privacy:
+        description: "YouTube privacy for this manual run (private = safe; public = real public test)"
+        type: choice
+        options: [private, public]
+        default: private
+      max_videos:
+        description: "Maximum number of videos to make (use 1 for a quick test)"
+        type: string
+        default: "2"
       retention_days:
         description: "Days before videos are deleted (normal = 10; type 0 to test deletion right now)"
         type: string
@@ -45,9 +54,9 @@ jobs:
       CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       # optional knobs
       MAX_ITEMS: "10"
-      MAX_VIDEOS: "2"
+      MAX_VIDEOS: ${{ github.event.inputs.max_videos || '2' }}
       ITEMS_PER_VIDEO: "4"
-      YT_PRIVACY: "private"      # set to "public" after your YouTube API audit is approved
+      YT_PRIVACY: ${{ github.event.inputs.privacy || 'private' }}   # scheduled runs are always private until you decide otherwise
       PYTHONUNBUFFERED: "1"
       GEMINI_MODEL: "gemini-3.5-flash-lite"
       UPLOAD_YT: ${{ github.event.inputs.upload_youtube == 'true' && '1' || '0' }}   # only a manual run with the box ticked uploads
