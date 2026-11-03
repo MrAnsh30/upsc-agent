@@ -56,10 +56,10 @@ jobs:
       MAX_ITEMS: "10"
       MAX_VIDEOS: ${{ github.event.inputs.max_videos || '2' }}
       ITEMS_PER_VIDEO: "4"
-      YT_PRIVACY: ${{ github.event.inputs.privacy || 'private' }}   # scheduled runs are always private until you decide otherwise
+      YT_PRIVACY: ${{ github.event.inputs.privacy || 'private' }}   # the daily run uploads as PRIVATE; to go public change 'private' here to 'public'
       PYTHONUNBUFFERED: "1"
       GEMINI_MODEL: "gemini-3.5-flash-lite"
-      UPLOAD_YT: ${{ github.event.inputs.upload_youtube == 'true' && '1' || '0' }}   # only a manual run with the box ticked uploads
+      UPLOAD_YT: ${{ (github.event_name == 'schedule' || github.event.inputs.upload_youtube == 'true') && '1' || '0' }}   # the daily 6 AM run uploads; manual runs only if the box is ticked
       UPLOAD_IG: "0"             # set to "1" once Instagram is set up
       NARRATION_LANG: "hi"       # Hindi voice-over (on-screen text stays English); "en" = English voice
       TTS_VOICE: "hi-IN-SwaraNeural"
