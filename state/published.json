@@ -19,5 +19,41 @@
     "youtube_url": "https://www.youtube.com/shorts/6dCJtc5YPok",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-04T01:39:22+00:00",
+    "title": "RBI UCB Licensing and Tamil Nadu BESS Policy",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "6f6cc7df539e",
+      "4f84d8a2b365",
+      "f1bc1436a523"
+    ],
+    "thread_ids": [
+      "global-artificial-intelligence-governanc-b341",
+      "india-s-renewable-energy-transition-and--c39d",
+      "reserve-bank-of-india-urban-cooperative--fe13"
+    ],
+    "youtube_id": "SD6sUnrRDi8",
+    "youtube_url": "https://www.youtube.com/shorts/SD6sUnrRDi8",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-04T01:39:24+00:00",
+    "title": "Visa Form Simplification and One Health Day Revision",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "c2ad9acf4686",
+      "9597c4bc382f"
+    ],
+    "thread_ids": [
+      "expansion-of-foreigners-regional-registr-5e98",
+      "one-health-approach-and-disease-surveill-c660"
+    ],
+    "youtube_id": "fdC2M_tcaiM",
+    "youtube_url": "https://www.youtube.com/shorts/fdC2M_tcaiM",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
