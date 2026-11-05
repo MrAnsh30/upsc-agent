@@ -55,5 +55,46 @@
     "youtube_url": "https://www.youtube.com/shorts/fdC2M_tcaiM",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-05T01:51:15+00:00",
+    "title": "Cabinet Approves VISTAR Scheme and Critical Mineral Processing Support",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "8bc00308b920",
+      "f4d0c68f6724",
+      "100f07b6ba06",
+      "f255fc5dd7b2"
+    ],
+    "thread_ids": [
+      "critical-minerals-processing-support-sch-76ce",
+      "environmental-impacts-of-green-hydrogen--dd17",
+      "india-s-renewable-energy-transition-and--c39d",
+      "vistar-scheme-and-statistical-system-ove-7e3b"
+    ],
+    "youtube_id": "nd3zbI6drHk",
+    "youtube_url": "https://www.youtube.com/shorts/nd3zbI6drHk",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-05T01:51:18+00:00",
+    "title": "BRICS Carbon Markets & ISRO NVS-03 Satellite",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "8c8eebdf17f6",
+      "8d7de76b4b62",
+      "3925953eea26",
+      "79874e2c43e9"
+    ],
+    "thread_ids": [
+      "brics-carbon-markets-partnership-and-fra-e9fe",
+      "isro-navic-and-nvs-satellite-series-deve-e5aa",
+      "urbanization-policy-and-census-classific-53d3"
+    ],
+    "youtube_id": "XJawvXON5co",
+    "youtube_url": "https://www.youtube.com/shorts/XJawvXON5co",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
