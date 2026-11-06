@@ -24,6 +24,24 @@ print(f"IG_USER_ID: {len(uid)} digits, starts with {uid[:5]}"
       + ("" if uid.startswith("17841") else "   <-- Instagram business account numbers normally start with 17841; "
          "business_id (starts 1523...) is the portfolio, NOT the Instagram account"))
 
+def check_cloudinary() -> int:
+    cloud, key, secret = (os.environ.get(n, "") for n in ("CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"))
+    if not (cloud and key and secret):
+        print("[problem] Cloudinary secrets are missing (CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET)")
+        return 1
+    r = requests.get(f"https://api.cloudinary.com/v1_1/{cloud}/ping", auth=(key, secret), timeout=60)
+    ok = False
+    try:
+        ok = r.status_code == 200 and (r.json() or {}).get("status") == "ok"
+    except ValueError:
+        pass
+    if ok:
+        print("OK - Cloudinary credentials work (the agent can upload the temporary video).")
+        return 0
+    print(f"[problem] Cloudinary rejected the credentials (HTTP {r.status_code}). Check the cloud name, API key and secret.")
+    return 1
+
+
 errors = []
 for host in ("graph.facebook.com", "graph.instagram.com"):
     base = f"https://{host}/{ver}"
@@ -37,7 +55,7 @@ for host in ("graph.facebook.com", "graph.instagram.com"):
         else:
             msg = (lim.json().get("error", {}) or {}).get("message", lim.text[:200])
             print(f"[warning] could not read the publishing limit - the token may lack instagram_content_publish: {msg}")
-        sys.exit(0)
+        sys.exit(check_cloudinary())
     errors.append((host, (data.get("error", {}) or {}).get("message", f"HTTP {r.status_code}")))
 for host, msg in errors:
     print(f"[problem] {host}: {msg}")

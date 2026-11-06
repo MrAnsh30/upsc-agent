@@ -61,6 +61,10 @@ def yt_delete(video_id: str) -> None:
         raise
 
 
+class IGRefused(RuntimeError):
+    """Instagram answered 'no' (a 4xx error): retrying tomorrow will not help, a person has to delete the Reel."""
+
+
 def ig_delete(media_id: str) -> None:
     token = env("IG_ACCESS_TOKEN", required=True)
     r = requests.delete(f"{GRAPH}/{media_id}", params={"access_token": token}, timeout=60)
@@ -70,7 +74,8 @@ def ig_delete(media_id: str) -> None:
         data = {"raw": r.text[:200]}
     if r.status_code == 200 and data.get("success", True):
         return
-    raise RuntimeError(f"Instagram delete failed (HTTP {r.status_code}): {data}")
+    msg = f"Instagram delete failed (HTTP {r.status_code}): {data}"
+    raise (IGRefused(msg) if 400 <= r.status_code < 500 else RuntimeError(msg))   # 5xx = temporary, retried tomorrow
 
 
 # ----------------------------------------------------------------------------- local files
@@ -121,6 +126,7 @@ def main() -> int:
     keep: list[dict] = []
     removed_urls: set[str] = set()
     failures = 0
+    manual: list[str] = []
     print(f"[info] {len(records)} published record(s); deleting those older than {DAYS} days"
           + ("  (DRY RUN)" if DRY else ""))
 
@@ -151,9 +157,14 @@ def main() -> int:
                 removed_urls.add(rec["instagram_url"])
                 rec["instagram_id"] = ""
                 print("      Instagram: deleted")
+            except IGRefused as e:
+                manual.append(rec.get("instagram_url", ""))
+                rec["instagram_id"] = ""      # stop retrying: only a person can remove it now
+                print(f"      [ACTION NEEDED] Instagram refused to delete this Reel ({e}).")
+                print(f"      Please delete it by hand in the Instagram app: {rec.get('instagram_url', '')}")
             except Exception as e:  # noqa: BLE001
                 failures += 1
-                print(f"      [error] Instagram delete failed, will retry tomorrow: {e}")
+                print(f"      [error] Instagram delete failed (temporary), will retry tomorrow: {e}")
 
         delete_local(rec.get("file", ""))
         if rec.get("youtube_id") or rec.get("instagram_id"):
@@ -168,7 +179,9 @@ def main() -> int:
             mark_links_removed(removed_urls)
         except Exception as e:  # noqa: BLE001 - a Sheet hiccup must never undo the deletions
             print(f"[warn] could not update link cells in the Sheet: {e}")
-    return 1 if failures else 0
+    if manual:
+        print(f"[summary] {len(manual)} Instagram Reel(s) must be deleted by hand: " + ", ".join(manual))
+    return 1 if (failures or manual) else 0     # a red run = GitHub e-mails you
 
 
 if __name__ == "__main__":
