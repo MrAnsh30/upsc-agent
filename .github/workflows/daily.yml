@@ -13,6 +13,10 @@ on:
         description: "Upload the videos to YouTube as PRIVATE (for testing the upload)"
         type: boolean
         default: false
+      upload_instagram:
+        description: "Post Reels to Instagram (PUBLIC - Instagram has no private upload)"
+        type: boolean
+        default: false
       privacy:
         description: "YouTube privacy for this manual run (private = safe; public = real public test)"
         type: choice
@@ -60,7 +64,7 @@ jobs:
       PYTHONUNBUFFERED: "1"
       GEMINI_MODEL: "gemini-3.5-flash-lite"
       UPLOAD_YT: ${{ (github.event_name == 'schedule' || github.event.inputs.upload_youtube == 'true') && '1' || '0' }}   # the daily 6 AM run uploads; manual runs only if the box is ticked
-      UPLOAD_IG: "0"             # set to "1" once Instagram is set up
+      UPLOAD_IG: ${{ github.event.inputs.upload_instagram == 'true' && '1' || '0' }}   # only a manual run with the box ticked posts to Instagram
       NARRATION_LANG: "hi"       # Hindi voice-over (on-screen text stays English); "en" = English voice
       TTS_VOICE: "hi-IN-SwaraNeural"
       TTS_RATE: "-4%"
