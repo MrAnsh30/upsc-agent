@@ -96,5 +96,47 @@
     "youtube_url": "https://www.youtube.com/shorts/XJawvXON5co",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-06T01:48:15+00:00",
+    "title": "Mines Mineral Auctions and NPCI UPI MDR Defense",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "6ad4dd40c5aa",
+      "d6f2cabe2728",
+      "b5c706c9acbc",
+      "36222831835c"
+    ],
+    "thread_ids": [
+      "compressed-biogas-blending-targets-and-p-ce53",
+      "critical-minerals-processing-support-sch-76ce",
+      "digital-payments-and-upi-governance-f241",
+      "west-bengal-industrial-policy-and-invest-09b9"
+    ],
+    "youtube_id": "kTK-H4qQ0fM",
+    "youtube_url": "https://www.youtube.com/shorts/kTK-H4qQ0fM",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-06T01:48:17+00:00",
+    "title": "Agniveer Changes and MHA Visa Rules for Minorities",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "f4284693379a",
+      "bc0b32601586",
+      "915b68fa5bc5",
+      "bca37f2780a0"
+    ],
+    "thread_ids": [
+      "agnipath-military-recruitment-scheme-and-10e1",
+      "anaemia-burden-and-dietary-fortification-d60f",
+      "expansion-of-foreigners-regional-registr-0e6a",
+      "manual-scavenging-and-sewer-cleaning-saf-9f07"
+    ],
+    "youtube_id": "WZO5EbXYSWk",
+    "youtube_url": "https://www.youtube.com/shorts/WZO5EbXYSWk",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
