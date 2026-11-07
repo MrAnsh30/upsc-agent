@@ -138,5 +138,45 @@
     "youtube_url": "https://www.youtube.com/shorts/WZO5EbXYSWk",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-07T01:35:44+00:00",
+    "title": "VISTAR Initiative & Rice Stock Limits UPSC Revision",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "d348a6131e18",
+      "f189f64e7286",
+      "f92d54100b41",
+      "465563497bbd"
+    ],
+    "thread_ids": [
+      "agasthyamalai-biosphere-reserve-conserva-fd40",
+      "rice-and-paddy-stock-limits-and-anti-hoa-33eb",
+      "telangana-climate-resilience-and-urban-p-ae43",
+      "vistar-scheme-and-statistical-system-ove-7e3b"
+    ],
+    "youtube_id": "vio8cVewKbk",
+    "youtube_url": "https://www.youtube.com/shorts/vio8cVewKbk",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-07T01:35:46+00:00",
+    "title": "Wildlife Noise Pollution and UNESCO Manuscript Register",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "26ce742ce3a4",
+      "3e8630258193",
+      "15536122e1b0"
+    ],
+    "thread_ids": [
+      "adnoc-long-term-lng-supply-agreements-wi-4ff6",
+      "anthropocene-noise-pollution-and-wildlif-0855",
+      "unesco-memory-of-the-world-register-for--706f"
+    ],
+    "youtube_id": "9YG7J-cPYn8",
+    "youtube_url": "https://www.youtube.com/shorts/9YG7J-cPYn8",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
