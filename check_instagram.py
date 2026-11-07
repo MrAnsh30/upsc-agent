@@ -25,10 +25,22 @@ print(f"IG_USER_ID: {len(uid)} digits, starts with {uid[:5]}"
          "business_id (starts 1523...) is the portfolio, NOT the Instagram account"))
 
 def check_cloudinary() -> int:
-    cloud, key, secret = (os.environ.get(n, "") for n in ("CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET"))
-    if not (cloud and key and secret):
-        print("[problem] Cloudinary secrets are missing (CLOUDINARY_CLOUD_NAME / CLOUDINARY_API_KEY / CLOUDINARY_API_SECRET)")
+    names = ("CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_API_SECRET")
+    cloud, key, secret = (os.environ.get(n, "") for n in names)
+    missing = [n for n, v in zip(names, (cloud, key, secret)) if not v.strip()]
+    if missing:
+        print("[problem] These Cloudinary values arrived EMPTY: " + ", ".join(missing))
+        if len(missing) == 3:
+            print("  -> all three are empty. Either (a) the workflow file check-instagram.yml in .github/workflows is the OLD version "
+                  "(open it and search for CLOUDINARY - it must be there), or (b) none of the three secrets exist under "
+                  "Settings > Secrets and variables > Actions > Repository secrets.")
+        else:
+            print("  -> only these are empty, so add or correct exactly these secret names (capital letters, no spaces).")
         return 1
+    for n, v in zip(names, (cloud, key, secret)):
+        if v != v.strip() or v[:1] in "\"'" or v[-1:] in "\"'":
+            print(f"[problem] {n} has a space, new line or quote mark at the start/end - re-save it cleanly")
+            return 1
     r = requests.get(f"https://api.cloudinary.com/v1_1/{cloud}/ping", auth=(key, secret), timeout=60)
     ok = False
     try:
