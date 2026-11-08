@@ -178,5 +178,47 @@
     "youtube_url": "https://www.youtube.com/shorts/9YG7J-cPYn8",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-08T01:43:40+00:00",
+    "title": "Demonetisation 10 Years & Rajasthan Renewable Energy Award",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "6540d9809f65",
+      "24918dce50f1",
+      "554a798da6c0",
+      "4e07da0e139e"
+    ],
+    "thread_ids": [
+      "digital-payments-and-upi-governance-f241",
+      "global-climate-policy-and-energy-justice-74a2",
+      "state-renewable-energy-frameworks-and-so-59c0",
+      "traditional-himalayan-fairs-and-trans-hi-c7a2"
+    ],
+    "youtube_id": "JW9POy39nc0",
+    "youtube_url": "https://www.youtube.com/shorts/JW9POy39nc0",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-08T01:43:42+00:00",
+    "title": "Ranivas Mound and UN ACABQ Election Current Affairs Revision",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "400d53d1a402",
+      "51faa0f98e9b",
+      "a1329e959e2f",
+      "b0b66dcfb3c4"
+    ],
+    "thread_ids": [
+      "centrally-protected-monuments-and-archae-7227",
+      "india-s-representation-in-united-nations-3d73",
+      "poverty-reduction-and-economic-mobility--2aa9",
+      "special-intensive-revision-of-electoral--8095"
+    ],
+    "youtube_id": "wSulzAOmZjU",
+    "youtube_url": "https://www.youtube.com/shorts/wSulzAOmZjU",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
