@@ -220,5 +220,26 @@
     "youtube_url": "https://www.youtube.com/shorts/wSulzAOmZjU",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-08T10:57:48+00:00",
+    "title": "VISTAR Initiative and SBI Fraud Case",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "d348a6131e18",
+      "9bd4d5cc1d61",
+      "24918dce50f1",
+      "b0b66dcfb3c4"
+    ],
+    "thread_ids": [
+      "future-group-insolvency-and-cbi-bank-fra-2345",
+      "global-climate-policy-and-energy-justice-74a2",
+      "poverty-reduction-and-economic-mobility--2aa9",
+      "vistar-scheme-and-statistical-system-ove-7e3b"
+    ],
+    "youtube_id": "",
+    "youtube_url": "",
+    "instagram_id": "18013691048771076",
+    "instagram_url": "https://www.instagram.com/reel/DfemFqxil3N/"
   }
 ]
