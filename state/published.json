@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "published_at": "2026-11-09T01:48:09+00:00",
+    "title": "FSSAI Food Seizure & Karnataka Ethanol Petrol Testing",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "7618d5fe7f60",
+      "ed21940bdb19",
+      "01164bac19b6",
+      "bc866dc88676"
+    ],
+    "thread_ids": [
+      "electrical-fire-hazards-and-building-saf-a171",
+      "ethanol-blending-and-flex-fuel-vehicles-c114",
+      "fssai-nationwide-enforcement-drives-and--33c1",
+      "river-pollution-and-illegal-mining-in-in-e8b4"
+    ],
+    "youtube_id": "QoBBr05FBBU",
+    "youtube_url": "https://www.youtube.com/shorts/QoBBr05FBBU",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-09T01:48:11+00:00",
+    "title": "Sheikh Hasina Extradition and Zaporizhzhia Nuclear Plant Power Loss",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "813193966b68",
+      "8a108da78e29",
+      "2542252683c0",
+      "f75b93d129f0"
+    ],
+    "thread_ids": [
+      "india-bangladesh-diplomatic-relations-an-a4cd",
+      "russia-ukraine-war-ceasefires-and-humani-f582",
+      "transgender-rights-and-gender-identity-i-9f49",
+      "us-midterm-elections-and-political-shift-d5c1"
+    ],
+    "youtube_id": "ihvBeYDDqRs",
+    "youtube_url": "https://www.youtube.com/shorts/ihvBeYDDqRs",
+    "instagram_id": "",
+    "instagram_url": ""
+  }
+]
