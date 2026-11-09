@@ -26,6 +26,7 @@ from common import NEWS_SHEET, OUT, ROOT, TOPIC_SHEET, env, open_spreadsheet
 
 DAYS = int(env("VIDEO_RETENTION_DAYS", "10"))
 DRY = env("CLEANUP_DRY_RUN", "0") == "1"
+ONLY_IG = env("CLEANUP_ONLY", "all") == "instagram"   # test mode: touch Instagram Reels only, leave YouTube + local files alone
 GRAPH = f"https://graph.facebook.com/{env('GRAPH_VERSION', 'v23.0')}"
 
 
@@ -131,7 +132,7 @@ def main() -> int:
           + ("  (DRY RUN)" if DRY else ""))
 
     for rec in records:
-        if not is_due(rec, now):
+        if not is_due(rec, now) or (ONLY_IG and not rec.get("instagram_id")):
             keep.append(rec)
             continue
         label = rec.get("title", "?")[:60]
@@ -142,7 +143,7 @@ def main() -> int:
             keep.append(rec)
             continue
 
-        if rec.get("youtube_id"):
+        if rec.get("youtube_id") and not ONLY_IG:
             try:
                 yt_delete(rec["youtube_id"])
                 removed_urls.add(rec["youtube_url"])
@@ -166,7 +167,8 @@ def main() -> int:
                 failures += 1
                 print(f"      [error] Instagram delete failed (temporary), will retry tomorrow: {e}")
 
-        delete_local(rec.get("file", ""))
+        if not ONLY_IG:
+            delete_local(rec.get("file", ""))
         if rec.get("youtube_id") or rec.get("instagram_id"):
             keep.append(rec)        # something is still online -> keep the record and retry
         else:
@@ -174,7 +176,8 @@ def main() -> int:
 
     if not DRY:
         state_store.save(keep)
-        sweep_local(now)
+        if not ONLY_IG:
+            sweep_local(now)
         try:
             mark_links_removed(removed_urls)
         except Exception as e:  # noqa: BLE001 - a Sheet hiccup must never undo the deletions
