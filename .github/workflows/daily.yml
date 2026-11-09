@@ -26,6 +26,11 @@ on:
         description: "Maximum number of videos to make (use 1 for a quick test)"
         type: string
         default: "2"
+      cleanup_only:
+        description: "What the deletion step may touch in this manual run (use 'instagram' to test Reel deletion safely)"
+        type: choice
+        options: [all, instagram]
+        default: all
       retention_days:
         description: "Days before videos are deleted (normal = 10; type 0 to test deletion right now)"
         type: string
@@ -70,6 +75,7 @@ jobs:
       TTS_RATE: "-4%"
       VIDEO_RETENTION_DAYS: ${{ github.event.inputs.retention_days || '10' }}   # videos are deleted after this many days
       CLEANUP_DRY_RUN: "0"       # set to "1" to only PRINT what would be deleted
+      CLEANUP_ONLY: ${{ github.event.inputs.cleanup_only || 'all' }}
       PREVIEW_MODE: ${{ github.event.inputs.preview == 'true' && '1' || '0' }}
     steps:
       - uses: actions/checkout@v4
