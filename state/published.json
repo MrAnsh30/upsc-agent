@@ -40,5 +40,46 @@
     "youtube_url": "https://www.youtube.com/shorts/ihvBeYDDqRs",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-10T01:42:58+00:00",
+    "title": "Ethanol Blend Tests & COP31 Climate Report",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "cfcda3f65aa6",
+      "a79c9bd87407",
+      "1b7e6b2594a5",
+      "efe2fc422a73"
+    ],
+    "thread_ids": [
+      "ethanol-blending-and-flex-fuel-vehicles-c114",
+      "global-climate-policy-and-energy-justice-74a2",
+      "reserve-bank-of-india-urban-cooperative--fe13"
+    ],
+    "youtube_id": "itFm-1nwmeo",
+    "youtube_url": "https://www.youtube.com/shorts/itFm-1nwmeo",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-10T01:43:00+00:00",
+    "title": "Delhi Air Data Gaps and Kochi Water Security Project",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "85deb682b65b",
+      "c61253b194b5",
+      "35d4b7384836",
+      "69d3b8c1ee9b"
+    ],
+    "thread_ids": [
+      "delhi-winter-air-quality-and-pollution-c-5fd7",
+      "global-climate-policy-and-energy-justice-74a2",
+      "kochi-water-security-assessment-and-urba-4319",
+      "russia-ukraine-war-ceasefires-and-humani-f582"
+    ],
+    "youtube_id": "uEquQXBuPg8",
+    "youtube_url": "https://www.youtube.com/shorts/uEquQXBuPg8",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
