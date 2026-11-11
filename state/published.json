@@ -81,5 +81,45 @@
     "youtube_url": "https://www.youtube.com/shorts/uEquQXBuPg8",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-11T01:42:12+00:00",
+    "title": "Tea MSP Proposal and Andhra AI Policies",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "e6afb538bb64",
+      "529f2258df2d",
+      "3959e9a70350",
+      "1902c81446f8"
+    ],
+    "thread_ids": [
+      "andhra-pradesh-investment-and-industrial-f0f2",
+      "global-climate-policy-and-energy-justice-74a2",
+      "tea-industry-minimum-sustainable-price-a-110c",
+      "transboundary-rivers-hydropower-projects-6ef3"
+    ],
+    "youtube_id": "kJjN7vVEyao",
+    "youtube_url": "https://www.youtube.com/shorts/kJjN7vVEyao",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-11T01:42:14+00:00",
+    "title": "Justice Kurian Joseph Committee & Tokamak Fusion",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "20925c7e2bfd",
+      "530e037b9f08",
+      "3afa07d1f9e7"
+    ],
+    "thread_ids": [
+      "justice-kurian-joseph-committee-on-union-55fd",
+      "obc-creamy-layer-criteria-and-affirmativ-f6b9",
+      "tokamak-nuclear-fusion-technology-and-co-ea15"
+    ],
+    "youtube_id": "_xBtHuYFqmw",
+    "youtube_url": "https://www.youtube.com/shorts/_xBtHuYFqmw",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
