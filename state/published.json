@@ -121,5 +121,45 @@
     "youtube_url": "https://www.youtube.com/shorts/_xBtHuYFqmw",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-12T01:51:18+00:00",
+    "title": "Moody's FY27 India Growth and CGFMU Scheme Extension",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "9d0b87a3cb0c",
+      "200c2749c549",
+      "dd0a47d3ea49",
+      "45d773eadbae"
+    ],
+    "thread_ids": [
+      "air-quality-and-environmental-performanc-4fea",
+      "cop31-climate-conference-and-global-clim-10ca",
+      "moody-s-india-economic-growth-projection-a746",
+      "pradhan-mantri-mudra-yojana-and-cgfmu-sc-2dd9"
+    ],
+    "youtube_id": "KG5SaQKExOI",
+    "youtube_url": "https://www.youtube.com/shorts/KG5SaQKExOI",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-12T01:51:21+00:00",
+    "title": "Jamaica Reparations Petition and Navi Mumbai Swachh Survekshan",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "fb0250a54a68",
+      "c4fcebfae7a9",
+      "37c014c4ba9c"
+    ],
+    "thread_ids": [
+      "indian-drone-industry-localization-and-s-2023",
+      "swachh-survekshan-cleanliness-rankings-76d5",
+      "transatlantic-slave-trade-reparations-an-2959"
+    ],
+    "youtube_id": "ar08aci4F_c",
+    "youtube_url": "https://www.youtube.com/shorts/ar08aci4F_c",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
