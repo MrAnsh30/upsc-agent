@@ -161,5 +161,47 @@
     "youtube_url": "https://www.youtube.com/shorts/ar08aci4F_c",
     "instagram_id": "",
     "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-13T01:46:39+00:00",
+    "title": "Retail Inflation 6.1% and RBI LRS Remittance Proposal",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "f8c656d28eef",
+      "3ecc6beec0a5",
+      "68574dd66b76",
+      "280882929582"
+    ],
+    "thread_ids": [
+      "cop31-climate-conference-and-global-clim-10ca",
+      "liberalised-remittance-scheme-and-foreig-b6ae",
+      "new-marine-species-discovery-in-indian-o-e29b",
+      "retail-inflation-trends-and-rbi-monetary-4ee9"
+    ],
+    "youtube_id": "WBEQFrppvcA",
+    "youtube_url": "https://www.youtube.com/shorts/WBEQFrppvcA",
+    "instagram_id": "",
+    "instagram_url": ""
+  },
+  {
+    "published_at": "2026-11-13T01:46:42+00:00",
+    "title": "Sheikh Hasina Passport Bid and CAG Power Audit",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "3d4a6a0a3be2",
+      "745778e3bf18",
+      "ee1b7e690eff",
+      "619a925e10ac"
+    ],
+    "thread_ids": [
+      "cag-audits-of-power-sector-and-discoms-cecf",
+      "india-bangladesh-diplomatic-relations-an-a4cd",
+      "india-s-tuberculosis-burden-and-who-glob-36a3",
+      "isro-expansion-and-private-sector-partne-23ce"
+    ],
+    "youtube_id": "-eWjCwhb00Y",
+    "youtube_url": "https://www.youtube.com/shorts/-eWjCwhb00Y",
+    "instagram_id": "",
+    "instagram_url": ""
   }
 ]
