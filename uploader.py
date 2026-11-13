@@ -194,7 +194,9 @@ def main() -> int:
             except Exception as e:  # noqa: BLE001
                 failures += 1
                 print(f"[error] YouTube upload failed: {e}")
-        if DO_IG and not meta.get("instagram_url"):
+        if DO_IG and meta.get("needs_review"):
+            print(f"[skip] Instagram NOT posted for '{meta['title'][:50]}': its script has unresolved checks - please review it on YouTube first.")
+        elif DO_IG and not meta.get("instagram_url"):
             try:
                 rec["instagram_id"], rec["instagram_url"] = ig_publish(meta, manifest["sheet_url"])
                 meta["instagram_url"] = rec["instagram_url"]

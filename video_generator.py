@@ -189,6 +189,7 @@ ITEMS:
                 left = check_numbers(s, group)
                 if left:
                     print(f"[warn] NUMBER PROBLEMS REMAIN - check this video before publishing: {left}")
+                    s["_needs_review"] = True        # the uploader will keep this video OFF Instagram
             s["hook"]["text"] = clean_hindi(s["hook"]["text"])
             s["outro"] = clean_hindi(s.get("outro", ""))
             for x in s["scenes"]:
@@ -196,7 +197,7 @@ ITEMS:
         return s
     except Exception as e:  # noqa: BLE001 - deterministic fallback so the pipeline never stalls
         print(f"[warn] script LLM failed ({e}); using English fallback script + English voice")
-        return {"_voice": FALLBACK_VOICE,
+        return {"_voice": FALLBACK_VOICE, "_needs_review": True,
                 "title": f"UPSC Current Affairs: {group[0]['headline'][:50]}",
                 "hook": {"text": f"{len(group)} UPSC updates you must revise today.", "screen": "UPSC Daily Revision"},
                 "scenes": [{"i": i, "narration": g["headline"] + ". " + (g["key_points"][0] if g["key_points"] else ""),
@@ -531,7 +532,7 @@ def build_video(idx: int, group: list[dict]) -> dict:
     for a in audios:
         a.close()
     return {"file": str(path), "title": unique_title(script, group), "hashtags": script.get("hashtags", ["#UPSC"])[:8],
-            "duration": round(total, 1), "voice": voice, "narration": [sc["narration"] for sc in scenes], "credits": sorted(set(credits)),
+            "duration": round(total, 1), "voice": voice, "needs_review": bool(script.get("_needs_review")), "narration": [sc["narration"] for sc in scenes], "credits": sorted(set(credits)),
             "items": [{"news_id": g["news_id"], "thread_id": g["thread_id"], "headline": g["headline"],
                        "gs_paper": g["gs_paper"]} for g in group]}
 
