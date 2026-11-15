@@ -40,5 +40,47 @@
     "youtube_url": "https://www.youtube.com/shorts/PQmt1Fszpf4",
     "instagram_id": "18145123300611498",
     "instagram_url": "https://www.instagram.com/reel/DftDNhZlMPp/"
+  },
+  {
+    "published_at": "2026-11-15T01:46:45+00:00",
+    "title": "Odisha Iron Ore Delay and Quad Summit in Manila",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "c97901f36383",
+      "e33900b11598",
+      "34e476fefa9b",
+      "415d44d20e60"
+    ],
+    "thread_ids": [
+      "indo-china-border-infrastructure-and-icb-4657",
+      "iron-ore-mining-capacity-utilisation-and-02a0",
+      "quad-grouping-geopolitics-and-indo-pacif-e821",
+      "un-general-assembly-resolutions-on-pales-87fc"
+    ],
+    "youtube_id": "K9KZgihuk8M",
+    "youtube_url": "https://www.youtube.com/shorts/K9KZgihuk8M",
+    "instagram_id": "18651314395023288",
+    "instagram_url": "https://www.instagram.com/reel/DfvoljlnB9B/"
+  },
+  {
+    "published_at": "2026-11-15T01:47:42+00:00",
+    "title": "Ayodhya Train and Trump Nuclear Talks",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "60fae3d69ce7",
+      "2ada15e1a284",
+      "908ff58e8ffd",
+      "7f8edabb3969"
+    ],
+    "thread_ids": [
+      "india-nepal-cross-border-railway-connect-eaa4",
+      "justice-kurian-joseph-committee-on-union-55fd",
+      "special-intensive-revision-of-electoral--8095",
+      "us-russia-china-trilateral-nuclear-arms--e60d"
+    ],
+    "youtube_id": "uwZYhTU41ZM",
+    "youtube_url": "https://www.youtube.com/shorts/uwZYhTU41ZM",
+    "instagram_id": "17956372404292487",
+    "instagram_url": "https://www.instagram.com/reel/Dfvos8rj0HE/"
   }
 ]
