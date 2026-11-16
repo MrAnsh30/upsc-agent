@@ -82,5 +82,47 @@
     "youtube_url": "https://www.youtube.com/shorts/uwZYhTU41ZM",
     "instagram_id": "17956372404292487",
     "instagram_url": "https://www.instagram.com/reel/Dfvos8rj0HE/"
+  },
+  {
+    "published_at": "2026-11-16T01:59:48+00:00",
+    "title": "India Rice Economy and COP31 Climate Target Revision",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "7441eba02541",
+      "0a7de052160c",
+      "9f41f8a85ddc",
+      "73255680e571"
+    ],
+    "thread_ids": [
+      "cop31-climate-conference-and-global-clim-10ca",
+      "india-bangladesh-diplomatic-relations-an-a4cd",
+      "india-s-rice-economy-and-groundwater-sus-1e70",
+      "india-us-bilateral-trade-agreement-and-t-c922"
+    ],
+    "youtube_id": "sGvE6CeRYCc",
+    "youtube_url": "https://www.youtube.com/shorts/sGvE6CeRYCc",
+    "instagram_id": "18121622002959902",
+    "instagram_url": "https://www.instagram.com/reel/DfyO8lwnBs6/"
+  },
+  {
+    "published_at": "2026-11-16T02:01:20+00:00",
+    "title": "UN Death Penalty Vote and SpaceX Starship Catch",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "d94ffd5ec919",
+      "0da7d5f187d7",
+      "c5ac5f733991",
+      "cc11bbdfd51d"
+    ],
+    "thread_ids": [
+      "digital-personal-data-protection-act-imp-ce8f",
+      "national-health-accounts-and-healthcare--c381",
+      "spacex-starship-reusability-and-launch-t-2d51",
+      "un-general-assembly-debates-and-resoluti-72b6"
+    ],
+    "youtube_id": "jOPLmTATdYk",
+    "youtube_url": "https://www.youtube.com/shorts/jOPLmTATdYk",
+    "instagram_id": "18153367939480456",
+    "instagram_url": "https://www.instagram.com/reel/DfyPDPAiZxO/"
   }
 ]
