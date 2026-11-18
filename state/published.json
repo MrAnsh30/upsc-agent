@@ -166,5 +166,26 @@
     "youtube_url": "https://www.youtube.com/shorts/3RbFG8RjppQ",
     "instagram_id": "18148359925587372",
     "instagram_url": "https://www.instagram.com/reel/Df0ytV1jr5J/"
+  },
+  {
+    "published_at": "2026-11-18T01:52:36+00:00",
+    "title": "Poverty Lines, Modi at Summits & Voyager 1",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "362dccc60bb9",
+      "b427aa6b3869",
+      "727b3eb5f735",
+      "ab1599b495b0"
+    ],
+    "thread_ids": [
+      "isro-expansion-and-private-sector-partne-23ce",
+      "poverty-reduction-and-economic-mobility--2aa9",
+      "quad-asean-and-east-asia-summits-diploma-88e5",
+      "voyager-1-interstellar-mission-and-deep--7653"
+    ],
+    "youtube_id": "ARmPdCy6GdE",
+    "youtube_url": "https://www.youtube.com/shorts/ARmPdCy6GdE",
+    "instagram_id": "18080471654455449",
+    "instagram_url": "https://www.instagram.com/reel/Df3XuwACJHg/"
   }
 ]
