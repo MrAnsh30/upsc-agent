@@ -187,5 +187,45 @@
     "youtube_url": "https://www.youtube.com/shorts/ARmPdCy6GdE",
     "instagram_id": "18080471654455449",
     "instagram_url": "https://www.instagram.com/reel/Df3XuwACJHg/"
+  },
+  {
+    "published_at": "2026-11-19T01:52:09+00:00",
+    "title": "Crude Oil Bill Surge and Space Security Doctrine",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "b35a60bc7fdd",
+      "240087e01137",
+      "fc47db083ec9",
+      "284eb444f881"
+    ],
+    "thread_ids": [
+      "global-crude-oil-sourcing-and-geopolitic-10a3",
+      "india-japan-strategic-and-defense-cooper-3587",
+      "india-s-space-security-and-strategic-inf-7b91",
+      "jammu-and-kashmir-security-insurgency-an-6e6b"
+    ],
+    "youtube_id": "FCmWyHW4bwI",
+    "youtube_url": "https://www.youtube.com/shorts/FCmWyHW4bwI",
+    "instagram_id": "18101378240452098",
+    "instagram_url": "https://www.instagram.com/reel/Df58Yzbj7T2/"
+  },
+  {
+    "published_at": "2026-11-19T01:52:59+00:00",
+    "title": "UN Death Penalty Vote and CSR Funding Gaps",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "91eeef23a4b6",
+      "7f678172fb0b",
+      "bee72d551599"
+    ],
+    "thread_ids": [
+      "corporate-social-responsibility-spending-b4b8",
+      "isro-expansion-and-private-sector-partne-23ce",
+      "un-general-assembly-debates-and-resoluti-72b6"
+    ],
+    "youtube_id": "Gp9GDTgk_wM",
+    "youtube_url": "https://www.youtube.com/shorts/Gp9GDTgk_wM",
+    "instagram_id": "18060788183563438",
+    "instagram_url": "https://www.instagram.com/reel/Df58e_nAH19/"
   }
 ]
