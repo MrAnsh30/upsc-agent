@@ -227,5 +227,47 @@
     "youtube_url": "https://www.youtube.com/shorts/Gp9GDTgk_wM",
     "instagram_id": "18060788183563438",
     "instagram_url": "https://www.instagram.com/reel/Df58e_nAH19/"
+  },
+  {
+    "published_at": "2026-11-20T01:50:56+00:00",
+    "title": "Crude Oil Bill Surge and EPFO Withdrawal Rules",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "d852a6fdd80c",
+      "3d7e10e15570",
+      "fb4c5564f8eb",
+      "719d248982bc"
+    ],
+    "thread_ids": [
+      "cop31-climate-conference-and-global-clim-10ca",
+      "epfo-systematic-withdrawal-plan-and-prov-8ba3",
+      "foreign-portfolio-investment-inflows-and-6b96",
+      "global-crude-oil-sourcing-and-geopolitic-10a3"
+    ],
+    "youtube_id": "NlXOWxLS9EQ",
+    "youtube_url": "https://www.youtube.com/shorts/NlXOWxLS9EQ",
+    "instagram_id": "18091117556302087",
+    "instagram_url": "https://www.instagram.com/reel/Df8hHDClRsD/"
+  },
+  {
+    "published_at": "2026-11-20T01:52:15+00:00",
+    "title": "COP31 Draft Changes & MAC Security Role UPSC",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "39cef5756135",
+      "e3497de6c740",
+      "56290b22648c",
+      "c850a517a530"
+    ],
+    "thread_ids": [
+      "antimicrobial-resistance-state-action-pl-1eae",
+      "cop31-climate-conference-and-global-clim-10ca",
+      "multi-agency-centre-and-counter-terroris-47ec",
+      "substantive-equality-and-women-s-represe-280c"
+    ],
+    "youtube_id": "If4gw2bQdW8",
+    "youtube_url": "https://www.youtube.com/shorts/If4gw2bQdW8",
+    "instagram_id": "17918829468536443",
+    "instagram_url": "https://www.instagram.com/reel/Df8hOFlDs1i/"
   }
 ]
