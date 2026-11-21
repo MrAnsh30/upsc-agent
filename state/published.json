@@ -269,5 +269,47 @@
     "youtube_url": "https://www.youtube.com/shorts/If4gw2bQdW8",
     "instagram_id": "17918829468536443",
     "instagram_url": "https://www.instagram.com/reel/Df8hOFlDs1i/"
+  },
+  {
+    "published_at": "2026-11-21T01:50:12+00:00",
+    "title": "Core Sector Growth 10.9% and Capital Markets Imbalance",
+    "file": "output/videos/video_01.mp4",
+    "news_ids": [
+      "31dded8db7ed",
+      "013f5cfa30cf",
+      "15aceaeb2bb1",
+      "18c9f9eb2cf4"
+    ],
+    "thread_ids": [
+      "core-sector-industrial-growth-and-index--d9e2",
+      "indian-capital-markets-and-long-term-fin-77b2",
+      "indus-waters-treaty-suspension-and-india-d8ad",
+      "international-court-of-justice-rohingya--0fbe"
+    ],
+    "youtube_id": "zY4GDw6r8-Q",
+    "youtube_url": "https://www.youtube.com/shorts/zY4GDw6r8-Q",
+    "instagram_id": "18031946489884418",
+    "instagram_url": "https://www.instagram.com/reel/Df_FwQUlFJm/"
+  },
+  {
+    "published_at": "2026-11-21T01:51:01+00:00",
+    "title": "Nikhil Gupta Sentence and Congress Delimitation Formula",
+    "file": "output/videos/video_02.mp4",
+    "news_ids": [
+      "93f043687ed3",
+      "6b46effd97d5",
+      "05159ca72538",
+      "26cfb2b5bc2a"
+    ],
+    "thread_ids": [
+      "election-commission-independence-and-gov-8a7b",
+      "lok-sabha-delimitation-and-federal-repre-8387",
+      "nikhil-gupta-murder-for-hire-case-and-ex-da23",
+      "us-export-controls-on-advanced-ai-chips--57f5"
+    ],
+    "youtube_id": "bDYv6UZo75o",
+    "youtube_url": "https://www.youtube.com/shorts/bDYv6UZo75o",
+    "instagram_id": "18080187221446741",
+    "instagram_url": "https://www.instagram.com/reel/Df_F9U6jZio/"
   }
 ]
